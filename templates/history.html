@@ -1,6 +1,132 @@
-{% for record in history_records SAMPLE LANGS %}
-<tr>
-    <td>{{ record.category }}</td>
-    <td>{{ record.name }}</td>
-    </tr>
-{% endfor %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALIAS - History</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-placeholder">
+                    <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499758/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_qscnq2.png" />
+                </div>
+            </div>
+            <p class="menu-label">Menu</p>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="/">Dashboard</a></li>
+                    <li><a href="/inventory">Inventory</a></li>
+                    <li><a href="/audit">Audit</a></li>
+                    <li class="active"><a href="/history">History</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="profile-card">
+                    <div class="profile-icon">A</div>
+                    <div class="profile-info">
+                        <strong>ADMIN</strong>
+                        <button class="profile-btn">View Profile ></button>
+                    </div>
+                </div>
+                <button class="logout-btn">Logout</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header history-header">
+                <div class="header-titles">
+                    <h1>HISTORY</h1>
+                    <h2>Welcome, Kristine!</h2>
+                </div>
+                <div class="header-logo-right">
+                    <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499758/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_qscnq2.png" />
+                </div>
+            </header>
+
+<div class="content-wrapper">
+    <div class="history-container">
+        <div class="history-header-static">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>ACTION</th>
+                        <th class="text-right">DATE AND TIME</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+        <div class="history-body-scroll">
+            <table class="history-table">
+                <tbody>
+                    <tr>
+                        <td>Added 1 (+1) in Emergency Coffee.</td>
+                        <td class="text-right">05/17/2025 3:41 PM</td>
+                    </tr>
+                    <tr>
+                        <td>Added 5 (+5) in Emergency Commercial Rice.</td>
+                        <td class="text-right">05/29/2025 1:55 PM</td>
+                    </tr>
+                    <tr>
+                        <td>Removed 3 (-3) in Medical Disposable Syringe 3ML.</td>
+                        <td class="text-right">05/29/2025 5:05 PM</td>
+                    </tr>
+                            <tr>
+                                <td>Added 10 (+10) in Emergency Canned (Corned Beef).</td>
+                                <td class="text-right">05/29/2025 2:01 PM</td>
+                            </tr>
+                            <tr>
+                                <td>Added 3 (+3) in Veterinary Vit. B Complex with Liver Extract.</td>
+                                <td class="text-right">05/29/2025 2:04 PM</td>
+                            </tr>
+                            <tr>
+                                <td>Removed 1 (-1) in Veterinary Albendazole Dewormer (Valbazine).</td>
+                                <td class="text-right">05/29/2025 4:25 PM</td>
+                            </tr>
+                            <tr>
+                                <td>Added 7 (+7) in Medical Disposable Syringe 3ML.</td>
+                                <td class="text-right">05/29/2025 4:30 PM</td>
+                            </tr>
+                            <tr>
+                                <td>Added 1 (+1) in Vehicle Isuzu Van NHR Canter.</td>
+                                <td class="text-right">05/29/2025 4:35 PM</td>
+                            </tr>
+                            <tr>
+                                <td>Added 2 (+2) in Vehicle Meedo Bonggo Vehicle.</td>
+                                <td class="text-right">05/29/2025 4:40 PM</td>
+                            </tr>
+                            <tr>
+                                <td>Removed 1 (-1) in Vehicle MDRR Rescue Vehicle L300.</td>
+                                <td class="text-right">05/29/2025 4:45 PM</td>
+                            </tr>
+                            <tr>
+                                <td>Added 1 (+1) in Vehicle BLGF Donated Vehicle Tamaraw.</td>
+                                <td class="text-right">05/29/2025 4:50 PM</td>
+                            </tr>
+                            <tr>
+                                <td>Added 2 (+2) in Vehicle Meat Delivery Van.</td>
+                                <td class="text-right">05/29/2025 4:55 PM</td>
+                            </tr>
+                            <tr>
+                                <td>Added 4 (+4) in Emergency Commercial Rice.</td>
+                                <td class="text-right">05/29/2025 5:00 PM</td>
+                            </tr>
+                            <tr>
+                                <td>Removed 3 (-3) in Medical Disposable Syringe 3ML.</td>
+                                <td class="text-right">05/29/2025 5:05 PM</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
