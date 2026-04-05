@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit - ALIAS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            display: flex;
+            background: #e8ecf8;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 220px;
+            min-width: 220px;
+            background: #ffffff;
+            border-right: 1px solid #eaeaea;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            padding: 24px 0 20px;
+        }
+
+        .sidebar-logo {
+            padding: 0 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-logo-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 1.5px solid #d0d7f0;
+            flex-shrink: 0;
+        }
+
+        .sidebar-logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sidebar-logo-text .logo-name {
+            font-size: 18px;
+            font-weight: 900;
+            color: #31449b;
+            letter-spacing: 1px;
+            line-height: 1;
+        }
+
+        .sidebar-logo-text .logo-sub {
+            font-size: 9.5px;
+            color: #9aa5c0;
+            line-height: 1.3;
+            margin-top: 2px;
+        }
+
+        .sidebar-menu-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #31449b;
+            padding: 0 20px;
+            margin-bottom: 6px;
+        }
+
+        .sidebar-nav { flex: 1; }
+
+        .sidebar-nav ul { list-style: none; }
+
+        .sidebar-nav li a {
+            display: block;
+            padding: 11px 20px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #31449b;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+
+        .sidebar-nav li a:hover { background: #f0f2fa; }
+
+        .sidebar-nav li.active a {
+            background: #e4e7f5;
+            font-weight: 700;
+        }
+
+        .sidebar-footer {
+            padding: 16px 16px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .profile-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1.5px solid #eaeaea;
+            border-radius: 12px;
+            padding: 10px 14px;
+        }
+
+        .profile-icon {
+            width: 36px;
+            height: 36px;
+            background: #31449b;
+            color: #ffffff;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .profile-info { display: flex; flex-direction: column; }
+
+        .profile-info strong {
+            font-size: 13px;
+            color: #31449b;
+            font-weight: 700;
+        }
+
+        .profile-btn {
+            background: transparent;
+            border: 1px solid #31449b;
+            color: #31449b;
+            font-size: 10px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            border-radius: 4px;
+            padding: 3px 7px;
+            margin-top: 4px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .profile-btn:hover { background: #31449b; color: #fff; }
+
+        .logout-btn {
+            background: #31449b;
+            color: #ffffff;
+            border: none;
+            border-radius: 30px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+        }
+
+        .logout-btn:hover { background: #253580; }
+
+        .page-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .audit-header {
+            background: linear-gradient(135deg, #5269be 0%, #8fa0d8 50%, #c8d0ee 100%);
+            padding: 36px 50px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .audit-header-left h1 {
+            font-size: 90px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 3px;
+            line-height: 1;
+            margin: 0;
+            text-shadow: 2px 3px 6px rgba(0,0,0,0.15);
+        }
+
+        .audit-header-left h2 {
+            font-size: 22px;
+            font-weight: 600;
+            font-style: italic;
+            color: #31449b;
+            margin: 8px 0 0;
+        }
+
+        .audit-header-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 10px;
+        }
+
+        .alias-text-block { text-align: right; }
+
+        .alias-text-block .alias-title {
+            font-size: 28px;
+            font-weight: 900;
+            color: rgba(255,255,255,0.85);
+            letter-spacing: 2px;
+            line-height: 1;
+        }
+
+        .alias-text-block .alias-sub {
+            font-size: 11px;
+            color: rgba(255,255,255,0.75);
+            line-height: 1.4;
+            margin-top: 3px;
+        }
+
+        .alias-logo-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.6);
+            flex-shrink: 0;
+        }
+
+        .alias-logo-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .audit-body {
+            padding: 50px 60px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .audit-category-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 760px;
+            padding: 26px 40px;
+            background: #ffffff;
+            border: 1.5px solid #d8ddf0;
+            border-radius: 50px;
+            text-decoration: none;
+            color: #31449b;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 4px 18px rgba(49,68,155,0.07);
+            transition: all 0.22s ease;
+            cursor: pointer;
+        }
+
+        .audit-category-btn:hover {
+            background: #f0f3ff;
+            border-color: #8fa0d8;
+            box-shadow: 0 8px 28px rgba(49,68,155,0.15);
+            transform: translateY(-2px);
+            color: #1e2f80;
+        }
+
+        .audit-category-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(49,68,155,0.1);
+        }
+
+        @media (max-width: 680px) {
+            .audit-header { flex-direction: column; gap: 20px; padding: 28px 28px 32px; }
+            .audit-header-left h1 { font-size: 60px; }
+            .audit-body { padding: 30px 20px 40px; }
+            .audit-category-btn { font-size: 15px; padding: 20px 24px; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon">
+                <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499758/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_qscnq2.png"
+                     alt="ALIAS"
+                     onerror="this.parentElement.style.background='#31449b'; this.style.display='none';">
+            </div>
+            <div class="sidebar-logo-text">
+                <div class="logo-name">ALIAS</div>
+                <div class="logo-sub">Alubijid Local Inventory<br>and Audit System</div>
+            </div>
+        </div>
+
+        <p class="sidebar-menu-label">Menu</p>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/inventory">Inventory</a></li>
+                <li class="active"><a href="/audit">Audit</a></li>
+                <li><a href="/history">History</a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="profile-card">
+                <div class="profile-icon">A</div>
+                <div class="profile-info">
+                    <strong>ADMIN</strong>
+                    <button class="profile-btn">View Profile &gt;</button>
+                </div>
+            </div>
+            <button class="logout-btn">Logout</button>
+        </div>
+    </aside>
+
+    <div class="page-content">
+
+        <header class="audit-header">
+            <div class="audit-header-left">
+                <h1>AUDIT</h1>
+                <h2>Welcome, SLP GROUP!!</h2>
+            </div>
+            <div class="audit-header-right">
+                <div class="alias-text-block">
+                    <div class="alias-title">ALIAS</div>
+                    <div class="alias-sub">Alubijid Local Inventory<br>and Audit System</div>
+                </div>
+                <div class="alias-logo-circle">
+                    <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499758/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_qscnq2.png"
+                         alt="ALIAS Logo"
+                         onerror="this.parentElement.style.display='none';">
+                </div>
+            </div>
+        </header>
+
+        <div class="audit-body">
+            {% for cat in categories %}
+            <a href="{{ url_for('audit_form', category_name=cat.name) }}" class="audit-category-btn">
+                {{ cat.name }}
+            </a>
+            {% endfor %}
+        </div>
+
+    </div>
+
+</body>
+</html>
