@@ -6,62 +6,70 @@
 
 body {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: center;   /* horizontal center */
+  align-items: center;       /* vertical center */
   min-height: 100vh;
+  margin: 0;
   background: linear-gradient(135deg, #f8fbff, #dfe9ff);
   font-family: Arial, sans-serif;
 }
 
 .login-box {
   background: #ffffff;
-  padding: 40px;
+  padding: 50px;
   border-radius: 16px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
-  width: 340px;
+  width: 400px;
   text-align: center;
 }
 
 .logo {
-  width: 90px;
-  height: 90px;
+  width: 110px;
+  height: 110px;
   object-fit: contain;
-  margin-bottom: 12px;
+  margin-bottom: 15px;
 }
 
 h2 {
   color: #31449b;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
+  font-size: 28px;
 }
 
 input {
   width: 100%;
-  padding: 12px;
-  margin: 10px 0;
+  padding: 14px;
+  margin: 12px 0;
   border: 1px solid #d0d7e2;
   border-radius: 8px;
-  font-size: 14px;
-}
-
-input:focus {
-  outline: none;
-  border-color: #31449b;
+  font-size: 15px;
 }
 
 button {
   width: 100%;
-  padding: 12px;
-  margin-top: 10px;
+  padding: 14px;
+  margin-top: 12px;
   background: #31449b;
   color: #ffffff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: bold;
-  transition: 0.3s ease;
 }
 
 button:hover {
   background: #24357e;
+}
+
+.error-box {
+  background: #ffe5e5;
+  color: #d60000;
+  border: 1px solid #ff4d4d;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
 }
