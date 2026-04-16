@@ -65,3 +65,192 @@ button {
 button:hover {
   background: #24357e;
 }
+
+/* ---------- Inventory History Table ---------- */
+.inventory-history {
+    text-align: center;
+}
+
+.inventory-history h2 {
+    color: var(--primary-blue);
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.table-container {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: transparent;
+}
+
+th,
+td {
+    padding: 15px;
+    text-align: left;
+}
+
+th {
+    color: #a0a0a0;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-bottom: 2px solid #efefef;
+}
+
+td {
+    color: var(--primary-blue);
+    font-size: 14px;
+    border-bottom: 1px solid #efefef;
+}
+
+td:nth-child(2),
+td:nth-child(3) {
+    font-weight: 600;
+}
+
+/* Quantity Text Colors */
+.qty-red {
+    color: #d32f2f;
+    font-weight: bold;
+}
+
+.qty-yellow {
+    color: #fbc02d;
+    font-weight: bold;
+}
+
+.qty-green {
+    color: #388e3c;
+    font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .charts-grid {
+        flex-direction: column;
+    }
+
+    .top-header {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .header-titles h1 {
+        font-size: 50px;
+    }
+}
+
+/* ADDED: HISTORY PAGE!!!! */
+.history-header {
+    background: linear-gradient(135deg, rgba(82, 105, 190, 0.8) 0%, rgba(205, 215, 245, 0.2) 100%);
+    padding: 30px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.history-header h1{
+    color: white !important;
+}
+.history-header h2 {
+    color: #31449b !important;
+}
+
+.header-logo-right img {
+    height: 60px; 
+    width: auto;
+    object-fit: contain;
+}
+
+.history-container {
+    background: white;
+    border-radius: 8px;
+    margin-top: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden; 
+    display: flex;
+    flex-direction: column;
+}
+
+.history-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); 
+
+    max-height: 500px;    
+    overflow-y: auto;     
+    overflow-x: hidden;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.history-header-static {
+    padding: 20px 20px 0 20px;
+    background: white;
+    z-index: 2;
+}
+
+.history-body-scroll {
+    max-height: 450px;
+    overflow-y: auto;
+    padding: 0 20px 20px 20px;
+}
+
+.history-table th:first-child, 
+.history-table td:first-child {
+    width: 70%;
+}
+
+.history-table th:last-child, 
+.history-table td:last-child {
+    width: 30%;
+}
+
+.history-table th {
+    font-size: 11px;
+    color: #777;
+    font-weight: 500;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 5px 0 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.history-table td {
+    font-size: 12px;
+    color: #333;
+    padding: 10px 0;
+    border-bottom: 1px solid #f9f9f9;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.sidebar-nav li.active {
+    background-color: #f3f4f6;
+}
+
+.sidebar-nav li.active a {
+    color: #333;
+}
+
+.logout-btn {
+    background-color: #4048b2;
+    border-radius: 8px;
+}

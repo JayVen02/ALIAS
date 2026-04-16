@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ category_name }} Audit - ALIAS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #e8ecf8;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 220px;
+            min-width: 220px;
+            background: #ffffff;
+            border-right: 1px solid #eaeaea;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            padding: 24px 0 20px;
+        }
+
+        .sidebar-logo {
+            padding: 0 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-logo-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 1.5px solid #d0d7f0;
+            flex-shrink: 0;
+        }
+
+        .sidebar-logo-icon img { width: 100%; height: 100%; object-fit: cover; }
+
+        .sidebar-logo-text .logo-name {
+            font-size: 18px;
+            font-weight: 900;
+            color: #31449b;
+            letter-spacing: 1px;
+            line-height: 1;
+        }
+
+        .sidebar-logo-text .logo-sub {
+            font-size: 9.5px;
+            color: #9aa5c0;
+            line-height: 1.3;
+            margin-top: 2px;
+        }
+
+        .sidebar-menu-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #31449b;
+            padding: 0 20px;
+            margin-bottom: 6px;
+        }
+
+        .sidebar-nav { flex: 1; }
+        .sidebar-nav ul { list-style: none; }
+
+        .sidebar-nav li a {
+            display: block;
+            padding: 11px 20px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #31449b;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+
+        .sidebar-nav li a:hover { background: #f0f2fa; }
+        .sidebar-nav li.active a { background: #e4e7f5; font-weight: 700; }
+
+        .sidebar-footer {
+            padding: 16px 16px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .profile-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1.5px solid #eaeaea;
+            border-radius: 12px;
+            padding: 10px 14px;
+        }
+
+        .profile-icon {
+            width: 36px;
+            height: 36px;
+            background: #31449b;
+            color: #ffffff;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .profile-info { display: flex; flex-direction: column; }
+        .profile-info strong { font-size: 13px; color: #31449b; font-weight: 700; }
+
+        .profile-btn {
+            background: transparent;
+            border: 1px solid #31449b;
+            color: #31449b;
+            font-size: 10px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            border-radius: 4px;
+            padding: 3px 7px;
+            margin-top: 4px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .profile-btn:hover { background: #31449b; color: #fff; }
+
+        .logout-btn {
+            background: #31449b;
+            color: #ffffff;
+            border: none;
+            border-radius: 30px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+        }
+
+        .logout-btn:hover { background: #253580; }
+
+        .page-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            overflow-x: auto;
+        }
+
+        .audit-header {
+            background: linear-gradient(135deg, #5269be 0%, #8fa0d8 50%, #c8d0ee 100%);
+            padding: 36px 50px 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .audit-header-left h1 {
+            font-size: 90px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 3px;
+            line-height: 1;
+            text-shadow: 2px 3px 6px rgba(0,0,0,0.15);
+        }
+
+        .audit-header-left h2 {
+            font-size: 22px;
+            font-weight: 600;
+            font-style: italic;
+            color: #31449b;
+            margin-top: 8px;
+        }
+
+        .audit-header-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 10px;
+        }
+
+        .alias-text-block { text-align: right; }
+
+        .alias-text-block .alias-title {
+            font-size: 28px;
+            font-weight: 900;
+            color: rgba(255,255,255,0.85);
+            letter-spacing: 2px;
+            line-height: 1;
+        }
+
+        .alias-text-block .alias-sub {
+            font-size: 11px;
+            color: rgba(255,255,255,0.75);
+            line-height: 1.4;
+            margin-top: 3px;
+        }
+
+        .alias-logo-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.6);
+            flex-shrink: 0;
+        }
+
+        .alias-logo-circle img { width: 100%; height: 100%; object-fit: cover; }
+
+        .audit-body { padding: 36px 40px 60px; }
+
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .action-bar-left { display: flex; gap: 12px; align-items: center; }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            transition: all 0.2s ease;
+            background: #31449b;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(49,68,155,0.25);
+        }
+
+        .btn-action:hover {
+            background: #253580;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(49,68,155,0.35);
+        }
+
+        .btn-pdf {
+            background: #ffffff;
+            color: #31449b;
+            border: 2px solid #31449b;
+            box-shadow: 0 4px 14px rgba(49,68,155,0.10);
+        }
+
+        .btn-pdf:hover {
+            background: #f0f2fa;
+            transform: translateY(-2px);
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            border-left: 4px solid #388e3c;
+            color: #2e7d32;
+            padding: 14px 20px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .table-wrapper {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(49,68,155,0.08);
+            overflow: visible;
+        }
+
+        .table-inner {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 16px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 900px;
+            border-collapse: collapse;
+        }
+
+        thead tr { border-bottom: 1px solid #e8ecf8; }
+
+        thead th {
+            padding: 12px 10px;
+            font-size: 10.5px;
+            font-weight: 700;
+            color: #7a88b8;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            text-align: center;
+            vertical-align: middle;
+            border-right: 1px solid #f0f2fa;
+            line-height: 1.3;
+        }
+
+        thead th:last-child { border-right: none; }
+
+        thead tr.sub-header th {
+            padding: 8px 10px;
+            font-size: 10px;
+            border-top: 1px solid #f0f2fa;
+            color: #9aa5c0;
+        }
+
+        .th-group { border-bottom: 1px solid #f0f2fa; }
+
+        tbody tr { border-bottom: 1px solid #f0f2fa; transition: background 0.15s; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: #f7f9ff; }
+
+        tbody td {
+            padding: 14px 10px;
+            font-size: 13px;
+            color: #31449b;
+            text-align: center;
+            vertical-align: middle;
+            border-right: 1px solid #f5f6fc;
+        }
+
+        tbody td:last-child { border-right: none; }
+        tbody td:first-child { text-align: left; padding-left: 16px; font-weight: 700; }
+
+        .audit-input {
+            width: 80px;
+            padding: 6px 8px;
+            border: 1.5px solid #d0d7f0;
+            border-radius: 8px;
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+            color: #31449b;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .audit-input:focus { border-color: #5269be; }
+
+        .remarks-input {
+            width: 110px;
+            padding: 6px 8px;
+            border: 1.5px solid #d0d7f0;
+            border-radius: 8px;
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+            color: #31449b;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .remarks-input:focus { border-color: #5269be; }
+
+        .shortage-qty {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .shortage-neutral { background: #f0f2fa; color: #9aa5c0; }
+        .shortage-over    { background: #e8f5e9; color: #388e3c; }
+        .shortage-short   { background: #fdecea; color: #d32f2f; }
+
+        .row-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #9aa5c0;
+            font-size: 16px;
+            padding: 4px 6px;
+            border-radius: 6px;
+            transition: all 0.15s;
+            line-height: 1;
+        }
+
+        .icon-btn:hover { color: #31449b; background: #f0f2fa; }
+
+        .row-menu { position: static; display: inline-block; }
+
+        .dropdown-menu {
+            display: none;
+            position: fixed;
+            background: #ffffff;
+            border: 1px solid #e0e4f0;
+            border-radius: 10px;
+            box-shadow: 0 8px 28px rgba(49,68,155,0.18);
+            min-width: 150px;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .dropdown-menu.open { display: block; }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 11px 18px;
+            font-size: 13px;
+            color: #31449b;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.15s;
+        }
+
+        .dropdown-menu a:hover { background: #f0f2fa; }
+        .dropdown-menu a.danger { color: #d32f2f; }
+        .dropdown-menu a.danger:hover { background: #fdecea; }
+
+        .expand-row { display: none; }
+
+        .expand-row td {
+            background: #f7f9ff;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            color: #5269be;
+        }
+
+        .expand-row.open { display: table-row; }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #9aa5c0;
+            font-size: 15px;
+        }
+
+        .empty-state span { font-size: 36px; display: block; margin-bottom: 10px; }
+
+        .submit-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .btn-submit {
+            background: #31449b;
+            color: #ffffff;
+            padding: 13px 36px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(49,68,155,0.25);
+            transition: all 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #253580;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(49,68,155,0.35);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(49,68,155,0.18);
+            backdrop-filter: blur(2px);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal-box {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 40px 44px 36px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(49,68,155,0.18);
+        }
+
+        .modal-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 800;
+            color: #31449b;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+        }
+
+        .modal-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 10px;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 13px 18px;
+            border: 1.5px solid #c8d0ee;
+            border-radius: 30px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            color: #31449b;
+            background: #ffffff;
+            outline: none;
+            text-align: center;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .modal-input::placeholder { color: #aab2cc; font-weight: 500; }
+
+        .modal-input:focus {
+            border-color: #5269be;
+            box-shadow: 0 0 0 3px rgba(82,105,190,0.12);
+        }
+
+        .modal-error {
+            font-size: 11px;
+            color: #d32f2f;
+            text-align: center;
+            margin-bottom: 14px;
+            min-height: 16px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .modal-btn {
+            padding: 13px 52px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            border: none;
+            cursor: pointer;
+            background: #31449b;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(49,68,155,0.25);
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn:hover {
+            background: #253580;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(49,68,155,0.35);
+        }
+
+        .pdf-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(49,68,155,0.18);
+            backdrop-filter: blur(2px);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pdf-modal-overlay.open { display: flex; }
+
+        .pdf-modal-box {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 36px 40px 32px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 20px 60px rgba(49,68,155,0.18);
+        }
+
+        .pdf-modal-title {
+            text-align: center;
+            font-size: 17px;
+            font-weight: 800;
+            color: #31449b;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 22px;
+        }
+
+        .pdf-fields {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .pdf-field-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #7a88b8;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 4px;
+        }
+
+        .pdf-input {
+            width: 100%;
+            padding: 11px 18px;
+            border: 1.5px solid #c8d0ee;
+            border-radius: 30px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            color: #31449b;
+            background: #ffffff;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .pdf-input::placeholder { color: #aab2cc; font-weight: 500; }
+
+        .pdf-input:focus {
+            border-color: #5269be;
+            box-shadow: 0 0 0 3px rgba(82,105,190,0.12);
+        }
+
+        .pdf-modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 22px;
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon">
+                <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499758/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_qscnq2.png"
+                     alt="ALIAS"
+                     onerror="this.parentElement.style.background='#31449b'; this.style.display='none';">
+            </div>
+            <div class="sidebar-logo-text">
+                <div class="logo-name">ALIAS</div>
+                <div class="logo-sub">Alubijid Local Inventory<br>and Audit System</div>
+            </div>
+        </div>
+
+        <p class="sidebar-menu-label">Menu</p>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/inventory">Inventory</a></li>
+                <li class="active"><a href="/audit">Audit</a></li>
+                <li><a href="/history">History</a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="profile-card">
+                <div class="profile-icon">A</div>
+                <div class="profile-info">
+                    <strong>ADMIN</strong>
+                    <button class="profile-btn">View Profile &gt;</button>
+                </div>
+            </div>
+            <button class="logout-btn">Logout</button>
+        </div>
+    </aside>
+
+    <div class="page-content">
+
+        {% set display_names = {
+            'Fuel Consumption':   'FUEL',
+            'Transport Vehicle':  'TRANSPORT',
+            'Medicines':          'MEDICAL',
+            'Emergency Supplies': 'EMERGENCY',
+            'Veterinary Supplies':'VETERINARY'
+        } %}
+        {% set display_title = display_names[category_name] if category_name in display_names else category_name | upper %}
+
+        <header class="audit-header">
+            <div class="audit-header-left">
+                <h1>{{ display_title }}</h1>
+                <h2>Welcome, SLP GROUP!!</h2>
+            </div>
+            <div class="audit-header-right">
+                <div class="alias-text-block">
+                    <div class="alias-title">ALIAS</div>
+                    <div class="alias-sub">Alubijid Local Inventory<br>and Audit System</div>
+                </div>
+                <div class="alias-logo-circle">
+                    <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499758/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_qscnq2.png"
+                         alt="ALIAS Logo"
+                         onerror="this.parentElement.style.display='none';">
+                </div>
+            </div>
+        </header>
+
+        <div class="modal-overlay" id="createModal">
+            <div class="modal-box">
+                <div class="modal-title">Create New Item</div>
+                <div class="modal-fields">
+                    <input type="text"   id="mi-article"  class="modal-input" placeholder="Article">
+                    <input type="text"   id="mi-desc"     class="modal-input" placeholder="Description">
+                    <input type="text"   id="mi-propno"   class="modal-input" placeholder="Property No.">
+                    <input type="text"   id="mi-unit"     class="modal-input" placeholder="Unit Measure">
+                    <input type="number" id="mi-unitval"  class="modal-input" placeholder="Unit Value">
+                    <input type="number" id="mi-propcard" class="modal-input" placeholder="Qty per Property Card">
+                </div>
+                <div class="modal-error" id="modalError"></div>
+                <div class="modal-actions">
+                    <button class="modal-btn" id="modalBackBtn">Back</button>
+                    <button class="modal-btn" id="modalCreateBtn">Create</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="pdf-modal-overlay" id="pdfModal">
+            <div class="pdf-modal-box">
+                <div class="pdf-modal-title">Download PDF Report</div>
+                <form id="pdfForm" method="POST"
+                      action="{{ url_for('download_pdf', category_name=category_name) }}">
+                    <div class="pdf-fields">
+                        <div>
+                            <div class="pdf-field-label">As of Date</div>
+                            <input type="text" name="as_of_date" class="pdf-input"
+                                   placeholder="e.g. December 31, 2025" required>
+                        </div>
+                        <div>
+                            <div class="pdf-field-label">Accountable Person</div>
+                            <input type="text" name="accountable_person" class="pdf-input"
+                                   placeholder="Full Name" required>
+                        </div>
+                        <div>
+                            <div class="pdf-field-label">Position</div>
+                            <input type="text" name="position" class="pdf-input"
+                                   placeholder="e.g. Municipal Accountant" required>
+                        </div>
+                        <div>
+                            <div class="pdf-field-label">Department / Office</div>
+                            <input type="text" name="department" class="pdf-input"
+                                   placeholder="e.g. Accounting" required>
+                        </div>
+                    </div>
+                    <div id="pdfHiddenFields"></div>
+                    <div class="pdf-modal-actions">
+                        <button type="button" class="modal-btn" id="pdfModalBackBtn">Cancel</button>
+                        <button type="submit" class="modal-btn">⬇ Download PDF</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="audit-body">
+
+            {% if success %}
+            <div class="alert-success">
+                ✓ &nbsp; Audit data for <strong>{{ category_name }}</strong> has been submitted successfully.
+            </div>
+            {% endif %}
+
+            <div class="action-bar">
+                <div class="action-bar-left">
+                    <button class="btn-action" id="openModalBtn">+ &nbsp; Create New Item</button>
+                    <button class="btn-action btn-pdf" id="openPdfBtn">⬇ &nbsp; Download PDF</button>
+                </div>
+                <a href="{{ url_for('audit_categories') }}" class="btn-action">Back to Homepage</a>
+            </div>
+
+            <form action="{{ url_for('audit_form', category_name=category_name) }}" method="POST" id="auditForm">
+                <div class="table-wrapper">
+                    <div class="table-inner">
+                        <table id="auditTable">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">Article</th>
+                                    <th rowspan="2">Description</th>
+                                    <th rowspan="2">Property No.</th>
+                                    <th rowspan="2">Unit<br>Measure</th>
+                                    <th rowspan="2">Unit<br>Value</th>
+                                    <th rowspan="2">Quantity per<br>Property Card</th>
+                                    <th rowspan="2">Quantity per<br>Physical Count</th>
+                                    <th colspan="2" class="th-group">Shortage / Overage</th>
+                                    <th rowspan="2">Remarks</th>
+                                    <th rowspan="2"></th>
+                                </tr>
+                                <tr class="sub-header">
+                                    <th>Quantity</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditTbody">
+                                {% for item in items %}
+                                <tr class="audit-data-row"
+                                    data-article="{{ item.id }}"
+                                    data-desc="{{ item.name }}"
+                                    data-propno="{{ item.id }}"
+                                    data-unit=""
+                                    data-unitval="0"
+                                    data-propcard="{{ item.system_qty }}">
+                                    <td>{{ item.id }}</td>
+                                    <td>{{ item.name }}</td>
+                                    <td>{{ item.id }}</td>
+                                    <td>—</td>
+                                    <td class="unit-val-cell" data-val="0">—</td>
+                                    <td class="prop-card-qty" data-qty="{{ item.system_qty }}">{{ item.system_qty }}</td>
+                                    <td>
+                                        <input type="number"
+                                               name="physical_{{ item.id }}"
+                                               class="audit-input physical-input"
+                                               oninput="calculateShortage(this)"
+                                               placeholder="0"
+                                               required>
+                                    </td>
+                                    <td><span class="shortage-qty shortage-neutral">—</span></td>
+                                    <td><span class="shortage-val shortage-neutral">—</span></td>
+                                    <td>
+                                        <input type="text"
+                                               name="remarks_{{ item.id }}"
+                                               class="remarks-input"
+                                               placeholder="Add remark…">
+                                    </td>
+                                    <td>
+                                        <div class="row-actions">
+                                            <button type="button" class="icon-btn expand-btn" title="Expand">&#8964;</button>
+                                            <div class="row-menu">
+                                                <button type="button" class="icon-btn menu-btn" title="Options">&#8942;</button>
+                                                <div class="dropdown-menu">
+                                                    <a href="#" class="edit-btn">Edit Item</a>
+                                                    <a href="#" class="danger delete-btn">Delete Item</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="expand-row">
+                                    <td colspan="11">
+                                        <strong>Category:</strong> {{ item.category }} &nbsp;|&nbsp;
+                                        <strong>Property No.:</strong> {{ item.id }} &nbsp;|&nbsp;
+                                        <strong>System Qty:</strong> {{ item.system_qty }}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr id="emptyRow">
+                                    <td colspan="11">
+                                        <div class="empty-state">
+                                            <span>📋</span>
+                                            No items found for <strong>{{ category_name }}</strong>.
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="submit-row">
+                    <button type="submit" class="btn-submit">Submit {{ category_name }} Report</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+
+    <script>
+        function calculateShortage(inputEl) {
+            const row       = inputEl.closest('tr');
+            const propQtyEl = row.querySelector('.prop-card-qty');
+            const unitValEl = row.querySelector('.unit-val-cell');
+            const sQtyEl    = row.querySelector('.shortage-qty');
+            const sValEl    = row.querySelector('.shortage-val');
+            const remarkEl  = row.querySelector('.remarks-input');
+            if (!propQtyEl || !sQtyEl || !sValEl) return;
+            const propQty  = parseFloat(propQtyEl.dataset.qty) || 0;
+            const unitVal  = parseFloat(unitValEl.dataset.val) || 0;
+            const physical = parseFloat(inputEl.value);
+            if (isNaN(physical)) {
+                sQtyEl.textContent = '—'; sValEl.textContent = '—';
+                sQtyEl.className = 'shortage-qty shortage-neutral';
+                sValEl.className = 'shortage-val shortage-neutral';
+                if (remarkEl) remarkEl.required = false;
+                return;
+            }
+            const diff = physical - propQty;
+            const val  = diff * unitVal;
+            const sign = diff > 0 ? '+' : '';
+            const cls  = diff === 0 ? 'shortage-neutral' : diff > 0 ? 'shortage-over' : 'shortage-short';
+            sQtyEl.textContent = diff === 0 ? '0' : `${sign}${diff}`;
+            sQtyEl.className   = `shortage-qty ${cls}`;
+            sValEl.textContent = diff === 0 ? '0.00' : `${sign}${val.toFixed(2)}`;
+            sValEl.className   = `shortage-val ${cls}`;
+            if (remarkEl) remarkEl.required = diff !== 0;
+        }
+
+        function escHtml(str) {
+            return String(str)
+                .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        function positionDropdown(btn, dropdown) {
+            const rect = btn.getBoundingClientRect();
+            dropdown.style.top = (rect.bottom + window.scrollY + 4) + 'px';
+            setTimeout(() => {
+                let left = rect.right + window.scrollX - dropdown.offsetWidth;
+                if (left < 8) left = 8;
+                dropdown.style.left = left + 'px';
+            }, 0);
+        }
+
+        function attachRowEvents(tr, expandTr) {
+            tr.querySelector('.expand-btn').addEventListener('click', () => {
+                expandTr.classList.toggle('open');
+                tr.querySelector('.expand-btn').style.transform =
+                    expandTr.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+            });
+
+            const menuBtn  = tr.querySelector('.menu-btn');
+            const dropdown = tr.querySelector('.dropdown-menu');
+
+            menuBtn.addEventListener('click', e => {
+                e.stopPropagation();
+                document.querySelectorAll('.dropdown-menu.open').forEach(m => { if (m !== dropdown) m.classList.remove('open'); });
+                dropdown.classList.toggle('open');
+                if (dropdown.classList.contains('open')) positionDropdown(menuBtn, dropdown);
+            });
+
+            tr.querySelector('.delete-btn').addEventListener('click', e => {
+                e.preventDefault();
+                tr.remove(); expandTr.remove();
+            });
+
+            tr.querySelector('.edit-btn').addEventListener('click', e => {
+                e.preventDefault();
+                dropdown.classList.remove('open');
+                document.getElementById('mi-article').value  = tr.dataset.article  || '';
+                document.getElementById('mi-desc').value     = tr.dataset.desc     || '';
+                document.getElementById('mi-propno').value   = tr.dataset.propno   || '';
+                document.getElementById('mi-unit').value     = tr.dataset.unit     || '';
+                document.getElementById('mi-unitval').value  = tr.dataset.unitval  || '';
+                document.getElementById('mi-propcard').value = tr.dataset.propcard || '';
+                modalCreateBtn.dataset.editRow = 'true';
+                tr.dataset.editing = 'true';
+                modal.classList.add('open');
+                modalError.textContent = '';
+            });
+        }
+
+        function buildRow(article, desc, propno, unit, unitval, propcard) {
+            const safeId = article.replace(/[^a-zA-Z0-9\-_]/g, '_');
+            const uv     = parseFloat(unitval) || 0;
+            const tr     = document.createElement('tr');
+            tr.className = 'audit-data-row';
+            Object.assign(tr.dataset, { article, desc, propno, unit, unitval, propcard });
+            tr.innerHTML = `
+                <td>${escHtml(article)}</td>
+                <td>${escHtml(desc)}</td>
+                <td>${escHtml(propno)}</td>
+                <td>${escHtml(unit || '—')}</td>
+                <td class="unit-val-cell" data-val="${escHtml(unitval)}">${uv > 0 ? uv.toFixed(2) : '—'}</td>
+                <td class="prop-card-qty" data-qty="${escHtml(propcard)}">${escHtml(propcard)}</td>
+                <td><input type="number" name="physical_${escHtml(safeId)}" class="audit-input physical-input" oninput="calculateShortage(this)" placeholder="0" required></td>
+                <td><span class="shortage-qty shortage-neutral">—</span></td>
+                <td><span class="shortage-val shortage-neutral">—</span></td>
+                <td><input type="text" name="remarks_${escHtml(safeId)}" class="remarks-input" placeholder="Add remark…"></td>
+                <td>
+                    <div class="row-actions">
+                        <button type="button" class="icon-btn expand-btn" title="Expand">&#8964;</button>
+                        <div class="row-menu">
+                            <button type="button" class="icon-btn menu-btn" title="Options">&#8942;</button>
+                            <div class="dropdown-menu">
+                                <a href="#" class="edit-btn">Edit Item</a>
+                                <a href="#" class="danger delete-btn">Delete Item</a>
+                            </div>
+                        </div>
+                    </div>
+                </td>`;
+            const expandTr = document.createElement('tr');
+            expandTr.className = 'expand-row';
+            expandTr.innerHTML = `<td colspan="11"><strong>Article:</strong> ${escHtml(article)} &nbsp;|&nbsp; <strong>Property No.:</strong> ${escHtml(propno)} &nbsp;|&nbsp; <strong>Unit Value:</strong> ${uv > 0 ? uv.toFixed(2) : '—'}</td>`;
+            attachRowEvents(tr, expandTr);
+            return [tr, expandTr];
+        }
+
+        document.querySelectorAll('.audit-data-row').forEach(tr => attachRowEvents(tr, tr.nextElementSibling));
+
+        const modal          = document.getElementById('createModal');
+        const openModalBtn   = document.getElementById('openModalBtn');
+        const modalBackBtn   = document.getElementById('modalBackBtn');
+        const modalCreateBtn = document.getElementById('modalCreateBtn');
+        const modalError     = document.getElementById('modalError');
+
+        function closeModal() {
+            modal.classList.remove('open');
+            modalError.textContent = '';
+            delete modalCreateBtn.dataset.editRow;
+            document.querySelectorAll('.audit-data-row[data-editing]').forEach(r => delete r.dataset.editing);
+            ['mi-article','mi-desc','mi-propno','mi-unit','mi-unitval','mi-propcard']
+                .forEach(id => document.getElementById(id).value = '');
+        }
+
+        openModalBtn.addEventListener('click', () => { modal.classList.add('open'); modalError.textContent = ''; });
+        modalBackBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+        modalCreateBtn.addEventListener('click', () => {
+            const article  = document.getElementById('mi-article').value.trim();
+            const desc     = document.getElementById('mi-desc').value.trim();
+            const propno   = document.getElementById('mi-propno').value.trim();
+            const unit     = document.getElementById('mi-unit').value.trim();
+            const unitval  = document.getElementById('mi-unitval').value.trim();
+            const propcard = document.getElementById('mi-propcard').value.trim();
+            if (!article || !desc || !propcard) {
+                modalError.textContent = 'Article, Description, and Qty per Property Card are required.';
+                return;
+            }
+            if (modalCreateBtn.dataset.editRow === 'true') {
+                const editingRow = document.querySelector('.audit-data-row[data-editing="true"]');
+                if (editingRow) {
+                    const uv = parseFloat(unitval) || 0;
+                    editingRow.cells[0].textContent = article;
+                    editingRow.cells[1].textContent = desc;
+                    editingRow.cells[2].textContent = propno;
+                    editingRow.cells[3].textContent = unit || '—';
+                    editingRow.cells[4].textContent = uv > 0 ? uv.toFixed(2) : '—';
+                    editingRow.cells[4].dataset.val = unitval;
+                    editingRow.querySelector('.prop-card-qty').textContent = propcard;
+                    editingRow.querySelector('.prop-card-qty').dataset.qty = propcard;
+                    Object.assign(editingRow.dataset, { article, desc, propno, unit, unitval, propcard });
+                    const ph = editingRow.querySelector('.physical-input');
+                    if (ph.value) calculateShortage(ph);
+                    delete editingRow.dataset.editing;
+                }
+            } else {
+                const emptyRow = document.getElementById('emptyRow');
+                if (emptyRow) emptyRow.remove();
+                const [newTr, newExpand] = buildRow(article, desc, propno, unit, unitval, propcard);
+                document.getElementById('auditTbody').append(newTr, newExpand);
+            }
+            closeModal();
+        });
+
+        const pdfModal      = document.getElementById('pdfModal');
+        const openPdfBtn    = document.getElementById('openPdfBtn');
+        const pdfModalBack  = document.getElementById('pdfModalBackBtn');
+        const pdfHidden     = document.getElementById('pdfHiddenFields');
+
+        function collectRowsIntoHiddenFields() {
+            pdfHidden.innerHTML = '';
+            document.querySelectorAll('#auditTbody .audit-data-row').forEach(tr => {
+                const physInput = tr.querySelector('.physical-input');
+                const remInput  = tr.querySelector('.remarks-input');
+                const f = (name, val) => {
+                    const inp = document.createElement('input');
+                    inp.type = 'hidden'; inp.name = name; inp.value = val || '';
+                    pdfHidden.appendChild(inp);
+                };
+                f('pdf_article[]',  tr.dataset.article  || tr.cells[0].textContent.trim());
+                f('pdf_desc[]',     tr.dataset.desc     || tr.cells[1].textContent.trim());
+                f('pdf_propno[]',   tr.dataset.propno   || tr.cells[2].textContent.trim());
+                f('pdf_unit[]',     tr.dataset.unit     || tr.cells[3].textContent.trim());
+                f('pdf_unitval[]',  tr.dataset.unitval  || '');
+                f('pdf_qtycard[]',  tr.dataset.propcard || tr.querySelector('.prop-card-qty').dataset.qty || '');
+                f('pdf_qtyphys[]',  physInput ? physInput.value : '');
+                f('pdf_remarks[]',  remInput  ? remInput.value  : '');
+            });
+        }
+
+        openPdfBtn.addEventListener('click', () => {
+            collectRowsIntoHiddenFields();
+            pdfModal.classList.add('open');
+        });
+
+        pdfModalBack.addEventListener('click', () => pdfModal.classList.remove('open'));
+        pdfModal.addEventListener('click', e => { if (e.target === pdfModal) pdfModal.classList.remove('open'); });
+
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown-menu.open').forEach(m => m.classList.remove('open'));
+        });
+    </script>
+
+</body>
+</html>
