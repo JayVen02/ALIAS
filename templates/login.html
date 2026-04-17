@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALIAS – Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body class="login-page">
+<div class="login-wrapper">
+
+    <div class="login-left">
+        <img src="{{ url_for('static', filename='img/Logo.png') }}" alt="ALIAS" class="login-big-logo">
+    </div>
+
+    <div class="login-right">
+        <img src="{{ url_for('static', filename='img/Alubijid_Misamis_Oriental_1.png') }}" alt="Alubijid Seal" class="login-seal">
+        <h1 class="login-title">ALIAS</h1>
+        <p class="login-sub">Alubijid Local Inventory and Audit System</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for cat, msg in messages %}
+            <div class="flash flash-{{ cat }}">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('inventory.login') }}" method="POST" class="login-form">
+            <input type="text"     name="username" placeholder="Username" required autofocus>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+</div>
+</body>
+</html>

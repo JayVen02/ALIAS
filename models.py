@@ -1,78 +1,37 @@
-from datetime import date
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+class User(db.Model):
+    __tablename__ = 'users'
+    id            = db.Column(db.Integer, primary_key=True)
+    username      = db.Column(db.String(100), nullable=False, unique=True)
+    password_hash = db.Column(db.String(255), nullable=False)
+    full_name     = db.Column(db.String(150), nullable=False)
+    role          = db.Column(db.Enum('admin', 'inventory_staff'), nullable=False, default='inventory_staff')
+    is_active     = db.Column(db.Boolean, default=True)
+    created_at    = db.Column(db.DateTime, default=datetime.utcnow)
 
-class Category(db.Model):
-    __tablename__ = 'categories'
+class Item(db.Model):
+    __tablename__ = 'items'
+    id           = db.Column(db.Integer, primary_key=True)
+    item_code    = db.Column(db.String(50), nullable=False, unique=True)
+    category     = db.Column(db.String(100), nullable=False)
+    subcategory  = db.Column(db.String(100), nullable=False)
+    name         = db.Column(db.String(200), nullable=False)
+    unit_measure = db.Column(db.String(50), default='unit')
+    unit_value   = db.Column(db.Numeric(15, 2), default=0)
+    system_qty   = db.Column(db.Integer, nullable=False, default=0)
+    is_deleted   = db.Column(db.Boolean, default=False)
+    created_by   = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    created_at   = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at   = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    id   = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False, unique=True)
-
-    subcategories = db.relationship('Subcategory', backref='category', lazy=True, cascade='all, delete-orphan')
-    items         = db.relationship('InventoryItem', backref='category', lazy=True)
-
-    def to_dict(self):
-        return {'id': self.id, 'name': self.name}
-
-
-class Subcategory(db.Model):
-    __tablename__ = 'subcategories'
-
-    id          = db.Column(db.Integer, primary_key=True)
-    name        = db.Column(db.String(100), nullable=False)
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
-
-    items = db.relationship('InventoryItem', backref='subcategory', lazy=True)
-
-    __table_args__ = (db.UniqueConstraint('name', 'category_id'),)
-
-    def to_dict(self):
-        return {'id': self.id, 'name': self.name, 'category_id': self.category_id}
-
-
-class InventoryItem(db.Model):
-    __tablename__ = 'inventory_items'
-
-    id               = db.Column(db.Integer, primary_key=True)
-    category_id      = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
-    subcategory_id   = db.Column(db.Integer, db.ForeignKey('subcategories.id'), nullable=False)
-    name             = db.Column(db.String(255), nullable=False)
-    quantity         = db.Column(db.Integer, nullable=False, default=0)
-
-    # Detail fields (expanded view / create-new continuation)
-    article          = db.Column(db.String(255))
-    stock_number     = db.Column(db.String(100))
-    unit_of_measure  = db.Column(db.String(100))
-    unit_value       = db.Column(db.Numeric(15, 2))
-    balance_per_card = db.Column(db.Integer)
-    on_hand_per_count= db.Column(db.Integer)
-    shortage_quantity= db.Column(db.Integer)
-    overage_value    = db.Column(db.Numeric(15, 2))
-    remarks          = db.Column(db.Text)
-
-    date_created     = db.Column(db.Date, nullable=False, default=date.today)
-    date_updated     = db.Column(db.Date, nullable=False, default=date.today, onupdate=date.today)
-
-    def to_dict(self):
-        return {
-            'id':                self.id,
-            'category_id':       self.category_id,
-            'category_name':     self.category.name if self.category else '',
-            'subcategory_id':    self.subcategory_id,
-            'subcategory_name':  self.subcategory.name if self.subcategory else '',
-            'name':              self.name,
-            'quantity':          self.quantity,
-            'article':           self.article,
-            'stock_number':      self.stock_number,
-            'unit_of_measure':   self.unit_of_measure,
-            'unit_value':        float(self.unit_value) if self.unit_value else None,
-            'balance_per_card':  self.balance_per_card,
-            'on_hand_per_count': self.on_hand_per_count,
-            'shortage_quantity': self.shortage_quantity,
-            'overage_value':     float(self.overage_value) if self.overage_value else None,
-            'remarks':           self.remarks,
-            'date_created':      self.date_created.strftime('%m/%d/%Y') if self.date_created else '',
-            'date_updated':      self.date_updated.strftime('%m/%d/%Y') if self.date_updated else '',
-        }
+class History(db.Model):
+    __tablename__ = 'history'
+    id        = db.Column(db.Integer, primary_key=True)
+    user_id   = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    action    = db.Column(db.String(500), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    user      = db.relationship('User', foreign_keys=[user_id])

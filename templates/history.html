@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALIAS – History</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="dashboard-container">
+
+    {% include '_sidebar.html' %}
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-titles">
+                <h1>HISTORY</h1>
+                <h2><em>Welcome, {{ session.full_name.split()[0] if session.full_name else 'User' }}!</em></h2>
+            </div>
+            <div class="header-logo-right">
+                <img src="{{ url_for('static', filename='img/Menu_Header.png') }}" alt="ALIAS" class="header-logo">
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ACTION</th>
+                            <th>DATE AND TIME</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td>{{ log.action }}</td>
+                            <td style="color:#9aa5c0; white-space:nowrap;">
+                                {{ log.timestamp.strftime('%m/%d/%Y %I:%M %p') }}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="2" style="text-align:center;color:#9aa5c0;padding:24px;">No history yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="{{ url_for('static', filename='js/inventory.js') }}"></script>
+</body>
+</html>

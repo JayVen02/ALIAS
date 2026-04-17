@@ -1,22 +1,15 @@
-from flask import Flask, render_template
+import os
 
-app = Flask(__name__)
+class Config:
+    MYSQL_HOST     = 'localhost'
+    MYSQL_PORT     = 3306
+    MYSQL_USER     = 'root'
+    MYSQL_PASSWORD = ''
+    MYSQL_DB       = 'alias_db'
 
-@app.route('/')
-def home():
-    return render_template('index.html')
-
-@app.route('/inventory')
-def inventory():
-    return render_template('index.html')
-
-@app.route('/audit')
-def audit():
-    return render_template('index.html')
-
-@app.route('/history')
-def history():
-    return render_template('index.html')
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    SQLALCHEMY_DATABASE_URI = (
+        f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}"
+        f"@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
+    )
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SECRET_KEY = 'alias-secret-key-change-this'

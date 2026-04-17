@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALIAS – Audit</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="dashboard-container">
+
+    {% include '_sidebar.html' %}
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="header-titles">
+                <h1>AUDIT</h1>
+                <h2><em>Welcome, {{ session.full_name.split()[0] if session.full_name else 'User' }}!</em></h2>
+            </div>
+            <div class="header-logo-right">
+                <img src="{{ url_for('static', filename='img/Menu_Header.png') }}" alt="ALIAS" class="header-logo">
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="audit-list">
+                {% for cat in categories %}
+                <a href="{{ url_for('inventory.audit_form', category_name=cat.name) }}" class="audit-card">
+                    {{ cat.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+</div>
+<script src="{{ url_for('static', filename='js/inventory.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <img src="{{ url_for('static', filename='img/Menu_Header.png') }}" alt="ALIAS">
+    </div>
+
+    <p class="menu-label">Menu</p>
+
+    <nav class="sidebar-nav">
+        <ul>
+            <li class="{{ 'active' if request.endpoint == 'inventory.home' else '' }}">
+                <a href="{{ url_for('inventory.home') }}">Dashboard</a>
+            </li>
+            <li class="{{ 'active' if request.endpoint == 'inventory.inventory' else '' }}">
+                <a href="{{ url_for('inventory.inventory') }}">Inventory</a>
+            </li>
+            <li class="{{ 'active' if 'audit' in request.endpoint else '' }}">
+                <a href="{{ url_for('inventory.audit_categories') }}">Audit</a>
+            </li>
+            <li class="{{ 'active' if request.endpoint == 'inventory.history' else '' }}">
+                <a href="{{ url_for('inventory.history') }}">History</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="profile-card">
+            <div class="profile-icon">{{ session.full_name[0] if session.full_name else 'A' }}</div>
+            <div class="profile-info">
+                <strong>{{ session.role | upper | replace('_', ' ') }}</strong>
+                <button class="profile-btn">View Profile &gt;</button>
+            </div>
+        </div>
+        <a href="{{ url_for('inventory.logout') }}" class="logout-btn">Logout</a>
+    </div>
+</aside>
