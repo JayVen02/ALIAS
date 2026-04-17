@@ -1,15 +1,14 @@
-import os
+from flask import Flask
+from config import Config
+from models import db
+from routes.inventory import inventory_bp
 
-class Config:
-    MYSQL_HOST     = 'localhost'
-    MYSQL_PORT     = 3306
-    MYSQL_USER     = 'root'
-    MYSQL_PASSWORD = ''
-    MYSQL_DB       = 'alias_db'
+app = Flask(__name__)
+app.config.from_object(Config)
 
-    SQLALCHEMY_DATABASE_URI = (
-        f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}"
-        f"@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
-    )
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = 'alias-secret-key-change-this'
+db.init_app(app)
+
+app.register_blueprint(inventory_bp)
+
+if __name__ == '__main__':
+    app.run(debug=True)
