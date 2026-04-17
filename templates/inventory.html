@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ALIAS – Inventory</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/inventorystyle.css') }}"/>
+</head>
+<body>
+
+<!-- ═══════════════════════════ SIDEBAR ══════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">A</div>
+    <div class="logo-text">
+      <strong>ALIAS</strong>
+      <span>Alubijid Local Inventory<br>and Audit System</span>
+    </div>
+  </div>
+
+  <p class="sidebar-menu-label">Menu</p>
+  <nav class="sidebar-nav">
+    <a href="#" class="nav-link">Dashboard</a>
+    <a href="#" class="nav-link active">Inventory <span class="chevron">&#x2304;</span></a>
+    <a href="#" class="nav-link">Audit</a>
+    <a href="#" class="nav-link">History</a>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="user-card">
+      <div class="user-icon">A</div>
+      <div>
+        <strong>ADMIN</strong><br>
+        <a href="#">View Profile &rsaquo;</a>
+      </div>
+    </div>
+    <button class="btn-logout">Logout</button>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════ MAIN ═════════════════════════════════════════ -->
+<main class="main-content">
+
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">INVENTORY</h1>
+      <p class="welcome-text">Welcome, <em>Kristine!</em></p>
+    </div>
+    <div class="header-right">
+      <div class="logo-icon">A</div>
+      <div class="logo-text">
+        <strong>ALIAS</strong>
+        <span>Alubijid Local Inventory<br>and Audit System</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <button class="btn-create" id="btnCreateNew">Create New Item</button>
+    <input type="text" id="searchInput" class="search-input" placeholder="SEARCH ITEM" />
+    <div class="sort-wrapper">
+      <select id="sortSelect" class="sort-select">
+        <option value="latest">Sort By: Latest Update</option>
+        <option value="oldest">Sort By: Oldest Update</option>
+        <option value="name">Sort By: Name</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Category tabs -->
+  <div class="category-bar">
+    <button class="cat-prev" id="catPrev">&#8249;</button>
+    <span class="cat-label" id="catLabel">Category</span>
+    <button class="cat-next" id="catNext">&#8250;</button>
+    <div class="subcategory-tabs" id="subcategoryTabs"></div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrapper">
+    <table class="inventory-table" id="inventoryTable">
+      <thead>
+        <tr>
+          <th>CATEGORY</th>
+          <th>SUBCATEGORY</th>
+          <th>NAME</th>
+          <th>DATE CREATED</th>
+          <th>DATE UPDATED</th>
+          <th>QUANTITY</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="inventoryBody">
+        <!-- rows injected by JS -->
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<!-- ══════════════════════ CREATE NEW ITEM MODAL ═════════════════════════════ -->
+<div class="modal-overlay hidden" id="createModal">
+  <div class="modal">
+    <h3 class="modal-title">CREATE NEW ITEM</h3>
+    <div class="modal-row">
+      <select id="createCategory" class="modal-select">
+        <option value="">Category</option>
+      </select>
+      <select id="createSubcategory" class="modal-select">
+        <option value="">Subcategory</option>
+      </select>
+      <input type="number" id="createQuantity" class="modal-qty" placeholder="Quantity" min="0"/>
+    </div>
+    <input type="text" id="createName" class="modal-name" placeholder="Name"/>
+    <div class="modal-actions">
+      <button class="btn-back" id="createBack">Back</button>
+      <button class="btn-primary" id="createNext">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ DETAIL PANEL (inline expand) ══════════════════════ -->
+<!-- injected dynamically per row — see inventory.js -->
+
+<!-- ══════════════════════ CONFIRM DELETE MODAL ══════════════════════════════ -->
+<div class="modal-overlay hidden" id="deleteModal">
+  <div class="modal modal-sm">
+    <h3 class="modal-title">DELETE ITEM</h3>
+    <p id="deleteMsg">Are you sure you want to delete this item?</p>
+    <div class="modal-actions">
+      <button class="btn-back" id="deleteCancelBtn">Cancel</button>
+      <button class="btn-danger" id="deleteConfirmBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast hidden" id="toast"></div>
+
+<script src="{{ url_for('static', filename='js/inventory.js') }}"></script>
+</body>
+</html>
