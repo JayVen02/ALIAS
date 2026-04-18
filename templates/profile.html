@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header-container">
+    <div class="page-header-content">
+        <div class="page-header-title">
+            <h1 style="font-weight: 900; font-size: 5rem; letter-spacing: -2px;">USER PROFILE</h1>
+            <p class="welcome-msg" style="font-size: 1.5rem; font-style: italic;">Welcome, {{ session['username'] }}!</p>
+        </div>
+        <div class="header-logo-container">
+            <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499759/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Logo_bpla9k.png" alt="ALIAS">
+            <p class="header-logo-text">ALUBIJID LOCAL INVENTORY<br>AND AUDIT SYSTEM</p>
+        </div>
+    </div>
+</div>
+
+<div class="profile-content" style="padding: 0 2rem 2rem;">
+    <!-- Top Profile Section -->
+    <div style="display: grid; grid-template-columns: 350px 1fr; gap: 2rem; margin-bottom: 2rem; align-items: start;">
+        <!-- Profile Picture Section -->
+        <div class="card" style="padding: 0; overflow: hidden; border-radius: 40px; height: 450px; position: relative;">
+            {% if user.profile_picture %}
+                <img src="{{ url_for('static', filename=user.profile_picture.replace('static/', '')) }}" 
+                     alt="Profile Picture" 
+                     style="width: 100%; height: 100%; object-fit: cover;">
+            {% else %}
+                <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #31449b 0%, #6a82fb 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
+                    <span style="font-size: 5rem; font-weight: 900;">{{ user.username[0].upper() }}</span>
+                    <p style="font-weight: 700; margin-top: 1rem;">No Photo Set</p>
+                </div>
+            {% endif %}
+            
+            <form action="/profile/upload" method="POST" enctype="multipart/form-data" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);">
+                <label for="profile_pic" class="btn-primary" style="padding: 0.5rem 1.5rem; font-size: 0.8rem; cursor: pointer; white-space: nowrap; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">CHANGE PHOTO</label>
+                <input type="file" name="profile_pic" id="profile_pic" hidden onchange="this.form.submit()">
+            </form>
+        </div>
+
+        <!-- Personal Details Card -->
+        <div class="card" style="padding: 3rem; border-radius: 40px;">
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+                    <span style="color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.8rem;">Name</span>
+                    <span style="color: var(--primary-navy); font-weight: 800;">{{ user.full_name or 'Not Set' }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+                    <span style="color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.8rem;">Age</span>
+                    <span style="color: var(--primary-navy); font-weight: 800;">{{ user.age or 'Not Set' }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+                    <span style="color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.8rem;">Birthdate</span>
+                    <span style="color: var(--primary-navy); font-weight: 800;">{{ user.birthdate or 'Not Set' }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+                    <span style="color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.8rem;">Address</span>
+                    <span style="color: var(--primary-navy); font-weight: 800; text-align: right;">{{ user.address or 'Not Set' }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+                    <span style="color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.8rem;">Email</span>
+                    <span style="color: var(--primary-navy); font-weight: 800;">{{ user.email or 'Not Set' }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+                    <span style="color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 0.8rem;">Contact Number</span>
+                    <span style="color: var(--primary-navy); font-weight: 800;">{{ user.contact_number or 'Not Set' }}</span>
+                </div>
+                
+                <div style="margin-top: 1rem; display: flex; justify-content: flex-end;">
+                    <button class="btn-primary" onclick="openEditModal()">EDIT PROFILE DETAILS</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Skills/Work Section -->
+    <div class="card" style="padding: 2rem; border-radius: 40px; display: grid; grid-template-columns: 1.5fr 3fr; gap: 3rem;">
+        <div>
+            <h4 style="color: var(--primary-navy); font-weight: 900; text-align: center; margin-bottom: 1.5rem; text-transform: uppercase;">Skills:</h4>
+            <ul style="list-style: none; font-size: 0.9rem; font-weight: 700; color: var(--primary-navy); line-height: 1.8;">
+                {% if user.skills %}
+                    {% for skill in user.skills.split(',') %}
+                        <li>• {{ skill.strip() }}</li>
+                    {% endfor %}
+                {% else %}
+                    <li style="color: var(--text-muted);">No skills added yet.</li>
+                {% endif %}
+            </ul>
+        </div>
+        <div>
+            <h4 style="color: var(--primary-navy); font-weight: 900; text-align: left; margin-bottom: 1.5rem; text-transform: uppercase;">Work Experience:</h4>
+            <div style="color: var(--primary-navy); font-weight: 600; line-height: 1.6; white-space: pre-line;">
+                {{ user.work_experience or 'No work history added yet.' }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div id="editProfileModal" class="modal hidden">
+    <div class="modal-content" style="max-width: 600px;">
+        <h2 style="color: var(--primary-navy); margin-bottom: 1.5rem; text-align: center;">EDIT PROFILE</h2>
+        <form action="/profile" method="POST" class="modal-form">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div style="grid-column: span 2;">
+                    <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-left: 5px;">FULL NAME</label>
+                    <input type="text" name="full_name" value="{{ user.full_name or '' }}" placeholder="Full Name" class="modal-input">
+                </div>
+                <div style="grid-column: span 2;">
+                    <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-left: 5px;">EMAIL ADDRESS</label>
+                    <input type="email" name="email" value="{{ user.email or '' }}" placeholder="Email" class="modal-input">
+                </div>
+                <div>
+                    <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-left: 5px;">AGE</label>
+                    <input type="number" name="age" value="{{ user.age or '' }}" placeholder="Age" class="modal-input">
+                </div>
+                <div>
+                    <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-left: 5px;">BIRTHDATE</label>
+                    <input type="date" name="birthdate" value="{{ user.birthdate or '' }}" class="modal-input">
+                </div>
+                <div style="grid-column: span 2;">
+                    <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-left: 5px;">CONTACT NUMBER</label>
+                    <input type="text" name="contact" value="{{ user.contact_number or '' }}" placeholder="Contact Number" class="modal-input">
+                </div>
+                <div style="grid-column: span 2;">
+                    <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-left: 5px;">ADDRESS</label>
+                    <textarea name="address" placeholder="Address" class="modal-input" rows="2">{{ user.address or '' }}</textarea>
+                </div>
+                <div style="grid-column: span 1;">
+                    <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-left: 5px;">SKILLS (Comma separated)</label>
+                    <textarea name="skills" placeholder="UI/UX, Branding, Python..." class="modal-input" rows="3">{{ user.skills or '' }}</textarea>
+                </div>
+                <div style="grid-column: span 1;">
+                    <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-left: 5px;">WORK HISTORY</label>
+                    <textarea name="work" placeholder="Company Name - Role&#10;Dates..." class="modal-input" rows="3">{{ user.work_experience or '' }}</textarea>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem;">
+                <button type="button" class="btn-back" onclick="closeEditModal()" style="background: var(--text-muted); color: white; padding: 0.8rem 2.5rem; border-radius: 25px; border: none; cursor: pointer;">CANCEL</button>
+                <button type="submit" class="btn-save" style="background: var(--primary-navy); color: white; padding: 0.8rem 2.5rem; border-radius: 25px; border: none; cursor: pointer;">SAVE CHANGES</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openEditModal() {
+        document.getElementById('editProfileModal').classList.remove('hidden');
+    }
+    function closeEditModal() {
+        document.getElementById('editProfileModal').classList.add('hidden');
+    }
+</script>
+{% endblock %}

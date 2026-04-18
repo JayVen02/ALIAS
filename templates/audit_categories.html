@@ -1,12 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audit - ALIAS</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
             display: flex;
@@ -73,9 +80,13 @@
             margin-bottom: 6px;
         }
 
-        .sidebar-nav { flex: 1; }
+        .sidebar-nav {
+            flex: 1;
+        }
 
-        .sidebar-nav ul { list-style: none; }
+        .sidebar-nav ul {
+            list-style: none;
+        }
 
         .sidebar-nav li a {
             display: block;
@@ -87,7 +98,9 @@
             transition: background 0.15s;
         }
 
-        .sidebar-nav li a:hover { background: #f0f2fa; }
+        .sidebar-nav li a:hover {
+            background: #f0f2fa;
+        }
 
         .sidebar-nav li.active a {
             background: #e4e7f5;
@@ -124,7 +137,10 @@
             flex-shrink: 0;
         }
 
-        .profile-info { display: flex; flex-direction: column; }
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+        }
 
         .profile-info strong {
             font-size: 13px;
@@ -146,7 +162,10 @@
             transition: all 0.15s;
         }
 
-        .profile-btn:hover { background: #31449b; color: #fff; }
+        .profile-btn:hover {
+            background: #31449b;
+            color: #fff;
+        }
 
         .logout-btn {
             background: #31449b;
@@ -162,7 +181,9 @@
             width: 100%;
         }
 
-        .logout-btn:hover { background: #253580; }
+        .logout-btn:hover {
+            background: #253580;
+        }
 
         .page-content {
             flex: 1;
@@ -186,7 +207,7 @@
             letter-spacing: 3px;
             line-height: 1;
             margin: 0;
-            text-shadow: 2px 3px 6px rgba(0,0,0,0.15);
+            text-shadow: 2px 3px 6px rgba(0, 0, 0, 0.15);
         }
 
         .audit-header-left h2 {
@@ -204,19 +225,21 @@
             margin-top: 10px;
         }
 
-        .alias-text-block { text-align: right; }
+        .alias-text-block {
+            text-align: right;
+        }
 
         .alias-text-block .alias-title {
             font-size: 28px;
             font-weight: 900;
-            color: rgba(255,255,255,0.85);
+            color: rgba(255, 255, 255, 0.85);
             letter-spacing: 2px;
             line-height: 1;
         }
 
         .alias-text-block .alias-sub {
             font-size: 11px;
-            color: rgba(255,255,255,0.75);
+            color: rgba(255, 255, 255, 0.75);
             line-height: 1.4;
             margin-top: 3px;
         }
@@ -226,7 +249,7 @@
             height: 60px;
             border-radius: 50%;
             overflow: hidden;
-            border: 2px solid rgba(255,255,255,0.6);
+            border: 2px solid rgba(255, 255, 255, 0.6);
             flex-shrink: 0;
         }
 
@@ -258,7 +281,7 @@
             color: #31449b;
             font-size: 18px;
             font-weight: 600;
-            box-shadow: 0 4px 18px rgba(49,68,155,0.07);
+            box-shadow: 0 4px 18px rgba(49, 68, 155, 0.07);
             transition: all 0.22s ease;
             cursor: pointer;
         }
@@ -266,32 +289,46 @@
         .audit-category-btn:hover {
             background: #f0f3ff;
             border-color: #8fa0d8;
-            box-shadow: 0 8px 28px rgba(49,68,155,0.15);
+            box-shadow: 0 8px 28px rgba(49, 68, 155, 0.15);
             transform: translateY(-2px);
             color: #1e2f80;
         }
 
         .audit-category-btn:active {
             transform: translateY(0);
-            box-shadow: 0 3px 10px rgba(49,68,155,0.1);
+            box-shadow: 0 3px 10px rgba(49, 68, 155, 0.1);
         }
 
         @media (max-width: 680px) {
-            .audit-header { flex-direction: column; gap: 20px; padding: 28px 28px 32px; }
-            .audit-header-left h1 { font-size: 60px; }
-            .audit-body { padding: 30px 20px 40px; }
-            .audit-category-btn { font-size: 15px; padding: 20px 24px; }
+            .audit-header {
+                flex-direction: column;
+                gap: 20px;
+                padding: 28px 28px 32px;
+            }
+
+            .audit-header-left h1 {
+                font-size: 60px;
+            }
+
+            .audit-body {
+                padding: 30px 20px 40px;
+            }
+
+            .audit-category-btn {
+                font-size: 15px;
+                padding: 20px 24px;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <aside class="sidebar">
         <div class="sidebar-logo">
             <div class="sidebar-logo-icon">
                 <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499758/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_qscnq2.png"
-                     alt="ALIAS"
-                     onerror="this.parentElement.style.background='#31449b'; this.style.display='none';">
+                    alt="ALIAS" onerror="this.parentElement.style.background='#31449b'; this.style.display='none';">
             </div>
             <div class="sidebar-logo-text">
                 <div class="logo-name">ALIAS</div>
@@ -336,8 +373,7 @@
                 </div>
                 <div class="alias-logo-circle">
                     <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499758/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_qscnq2.png"
-                         alt="ALIAS Logo"
-                         onerror="this.parentElement.style.display='none';">
+                        alt="ALIAS Logo" onerror="this.parentElement.style.display='none';">
                 </div>
             </div>
         </header>
@@ -353,4 +389,5 @@
     </div>
 
 </body>
+
 </html>

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header-container">
+    <div class="page-header-content">
+        <div class="page-header-title">
+            <h1>AUDIT</h1>
+            <p class="welcome-msg">Welcome, <em>{{ session['username'] }}!</em></p>
+        </div>
+        <div class="header-logo-container">
+            <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499759/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Logo_bpla9k.png" alt="ALIAS">
+            <p class="header-logo-text">ALUBIJID LOCAL INVENTORY<br>AND AUDIT SYSTEM</p>
+        </div>
+    </div>
+</div>
+
+<div class="audit-content" style="padding: 0 2rem 2rem; display: flex; flex-direction: column; gap: 1rem;">
+    {% for cat in categories %}
+    <a href="/audit/{{ cat.name }}" class="audit-category-btn card" style="text-decoration: none; color: var(--primary-navy); font-weight: 700; font-size: 1.2rem; text-align: center; padding: 1.5rem; transition: all 0.2s ease;">
+        {{ cat.name }}
+    </a>
+    {% endfor %}
+</div>
+
+<style>
+    .audit-category-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(49, 68, 155, 0.1);
+        border-color: var(--primary-navy);
+    }
+</style>
+{% endblock %}
