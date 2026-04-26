@@ -6,7 +6,6 @@ ALIAS is a modern, high-fidelity web application designed for the Alubijid Local
 
 - **Unified Inventory Management**: Track articles, subcategories, and stock levels across multiple departments.
 - **Dynamic Audit System**: Generate real-time audit reports for specific categories and export them as professional PDFs.
-- **Figma-Inspired UI**: A premium, Single Page Application (SPA) experience with a sleek dark-navy sidebar and high-impact branding.
 - **Role-Based Access**: Secure login system with email-based authentication and department-specific tracking.
 - **Transaction History**: Comprehensive logging of all inventory changes for full accountability.
 
