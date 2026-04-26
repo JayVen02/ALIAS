@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header-container">
+    <div class="page-header-content">
+        <div class="page-header-title">
+            <h1>HISTORY</h1>
+            <p class="welcome-msg">Welcome, <em>{{ session['full_name'] }}!</em></p>
+        </div>
+        <div class="header-logo-container">
+            <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1777188010/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_zc0nex.png" alt="ALIAS Header">
+        </div>
+    </div>
+</div>
+
+<div class="history-content" style="padding: 0 2rem 2rem;">
+    <div class="data-table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>OFFICER</th>
+                    <th>DATE</th>
+                    <th>CATEGORY</th>
+                    <th>ACTIVITY</th>
+                    <th>STATUS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.officer_name }}</td>
+                    <td>{{ log.created_at.strftime('%B %d, %Y') }}</td>
+                    <td>{{ log.category_name if log.category_name else 'N/A' }}</td>
+                    <td>
+                        {% if log.action_type == 'CREATE' %}Added New Item
+                        {% elif log.action_type == 'UPDATE' %}Updated Inventory
+                        {% elif log.action_type == 'DELETE' %}Deleted Item
+                        {% else %}{{ log.action_type }}{% endif %}
+                    </td>
+                    <td><span style="color: var(--success);">● Done</span></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">No history recorded yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

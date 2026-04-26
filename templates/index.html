@@ -1,153 +1,163 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALIAS - Alubijid Local Inventory and Audit System</title>
+{% block content %}
+<div class="page-header-container">
+    <div class="page-header-content">
+        <div class="page-header-title">
+            <h1 style="font-weight: 900; font-size: 5rem; letter-spacing: -2px;">DASHBOARD</h1>
+            <p class="welcome-msg" style="font-size: 1.5rem; font-style: italic;">Welcome, {{ session['full_name'] }}!</p>
+        </div>
+        <div class="header-logo-container">
+            <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1777188010/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_zc0nex.png" alt="ALIAS Header">
+        </div>
+    </div>
+</div>
 
-    <!-- Google Fonts (Don't touch this or else!)-->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- styles.css -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-
-<body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-logo">
-                <div class="logo-placeholder">
-                    <img
-                        src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499758/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_qscnq2.png" />
+<div class="dashboard-content" style="padding: 0 2rem 2rem; text-align: center;">
+    <!-- Supply Trend Analysis -->
+    <div style="margin-bottom: 3rem;">
+        <h2 style="color: var(--primary-navy); font-weight: 900; font-size: 2.2rem; margin-bottom: 0.2rem;">SUPPLY TREND ANALYSIS</h2>
+        <p style="color: var(--primary-navy); font-style: italic; font-weight: 600; margin-bottom: 2rem;">Emergency Supply, Medical Supply, Veterinary Supply</p>
+        
+        <div class="charts-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
+            <!-- Emergency Supply -->
+            <div class="chart-container">
+                <div style="height: 150px; position: relative;">
+                    <canvas id="emergencyChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <h4 style="color: var(--primary-navy); font-weight: 800; margin-bottom: 0.2rem;">Emergency Supply</h4>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; font-style: italic;">Inflow and Outflow 2025</p>
                 </div>
             </div>
-
-            <p class="menu-label">Menu</p>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li class="active"><a href="/">Dashboard</a></li>
-                    <li><a href="/inventory">Inventory</a></li>
-                    <li><a href="/audit">Audit</a></li>
-                    <li><a href="/history">History</a></li>
-                </ul>
-            </nav>
-
-            <div class="sidebar-footer">
-                <div class="profile-card">
-                    <div class="profile-icon">A</div>
-                    <div class="profile-info">
-                        <strong>ADMIN</strong>
-                        <button class="profile-btn" onclick="window.location.href='#'">View Profile ></button>
-                    </div>
+            <!-- Medical Supply -->
+            <div class="chart-container">
+                <div style="height: 150px; position: relative;">
+                    <canvas id="medicalChart"></canvas>
                 </div>
-                <button class="logout-btn">Logout</button>
+                <div style="margin-top: 1rem;">
+                    <h4 style="color: var(--primary-navy); font-weight: 800; margin-bottom: 0.2rem;">Medical Supply</h4>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; font-style: italic;">Inflow and Outflow 2025</p>
+                </div>
             </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <header class="top-header">
-                <div class="header-titles">
-                    <h1>DASHBOARD</h1>
-                    <h2>Welcome, SLP GROUP!!</h2>
+            <!-- Veterinary Supply -->
+            <div class="chart-container">
+                <div style="height: 150px; position: relative;">
+                    <canvas id="veterinaryChart"></canvas>
                 </div>
-                <div class="header-logo-right">
-                    <div class="logo-placeholder-right">
-                        <div>
-                            <img
-                                src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499758/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_qscnq2.png" />
-                        </div>
-                    </div>
+                <div style="margin-top: 1rem;">
+                    <h4 style="color: var(--primary-navy); font-weight: 800; margin-bottom: 0.2rem;">Veterinary Supply</h4>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; font-style: italic;">Inflow and Outflow 2025</p>
                 </div>
-            </header>
-
-            <div class="content-wrapper">
-                <!-- Supply Trend Analysis -->
-                <section class="trend-analysis">
-                    <div class="section-title">
-                        <h2>SUPPLY TREND ANALYSIS</h2>
-                        <p>Emergency Supply, Medical Supply, Veterinary Supply</p>
-                    </div>
-
-                    <div class="charts-grid">
-                        <div class="chart-card">
-                            <div class="chart-badge">60</div>
-                            <canvas id="emergencyChart"></canvas>
-                            <h3>Emergency Supply</h3>
-                            <p>Inflow and Outflow 2025</p>
-                        </div>
-                        <div class="chart-card">
-                            <div class="chart-badge">50</div>
-                            <canvas id="medicalChart"></canvas>
-                            <h3>Medical Supply</h3>
-                            <p>Inflow and Outflow 2025</p>
-                        </div>
-                        <div class="chart-card">
-                            <div class="chart-badge">20</div>
-                            <canvas id="veterinaryChart"></canvas>
-                            <h3>Veterinary Supply</h3>
-                            <p>Inflow and Outflow 2025</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Inventory Update History For testing only no backend -->
-                <section class="inventory-history">
-                    <h2>INVENTORY UPDATE HISTORY</h2>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>CATEGORY</th>
-                                    <th>SUBCATEGORY</th>
-                                    <th>NAME</th>
-                                    <th>DATE CREATED</th>
-                                    <th>DATE UPDATED</th>
-                                    <th>QUANTITY</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>SUPPLY</td>
-                                    <td>EMERGENCY</td>
-                                    <td>COFFEE</td>
-                                    <td>01/01/2025</td>
-                                    <td>03/31/2025</td>
-                                    <td class="qty-red">2</td>
-                                </tr>
-                                <tr>
-                                    <td>SUPPLY</td>
-                                    <td>EMERGENCY</td>
-                                    <td>COFFEE</td>
-                                    <td>01/01/2025</td>
-                                    <td>03/31/2025</td>
-                                    <td class="qty-yellow">12</td>
-                                </tr>
-                                <tr>
-                                    <td>SUPPLY</td>
-                                    <td>EMERGENCY</td>
-                                    <td>COFFEE</td>
-                                    <td>01/01/2025</td>
-                                    <td>03/31/2025</td>
-                                    <td class="qty-green">24</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
             </div>
-        </main>
+        </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-</body>
+    <!-- Inventory Update History -->
+    <div style="margin-top: 3rem;">
+        <h2 style="color: var(--primary-navy); font-weight: 900; font-size: 2.2rem; margin-bottom: 2rem;">INVENTORY UPDATE HISTORY</h2>
+        <div class="data-table-container" style="border: none; box-shadow: none;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>CATEGORY</th>
+                        <th>SUBCATEGORY</th>
+                        <th>NAME</th>
+                        <th>DATE CREATED</th>
+                        <th>DATE UPDATED</th>
+                        <th>QUANTITY</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in recent_items %}
+                    <tr>
+                        <td>{{ item.category_name }}</td>
+                        <td>{{ item.subcategory_name }}</td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.date_created.strftime('%m/%d/%Y') if item.date_created else '' }}</td>
+                        <td>{{ item.date_updated.strftime('%m/%d/%Y') if item.date_updated else '' }}</td>
+                        {% set q_color = '#e74c3c' if item.quantity <= 5 else ('#f1c40f' if item.quantity <= 20 else 'var(--success)') %}
+                        <td style="color: {{ q_color }};">{{ item.quantity }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">No recent updates found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
-</html>
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { display: false }, y: { display: false } }
+        };
+
+        function createGradient(ctx) {
+            let gradient = ctx.createLinearGradient(0, 0, 0, 150);
+            gradient.addColorStop(0, 'rgba(49, 68, 155, 0.4)');
+            gradient.addColorStop(1, 'rgba(49, 68, 155, 0.05)');
+            return gradient;
+        }
+
+        const emergencyCtx = document.getElementById('emergencyChart').getContext('2d');
+        new Chart(emergencyCtx, {
+            type: 'line',
+            data: {
+                labels: [1, 2, 3, 4, 5, 6, 7],
+                datasets: [{
+                    data: [10, 15, 45, 30, 70, 65, 80],
+                    borderColor: '#31449b',
+                    borderWidth: 3,
+                    fill: true,
+                    backgroundColor: createGradient(emergencyCtx),
+                    tension: 0.4
+                }]
+            },
+            options: commonOptions
+        });
+
+        const medicalCtx = document.getElementById('medicalChart').getContext('2d');
+        new Chart(medicalCtx, {
+            type: 'line',
+            data: {
+                labels: [1, 2, 3, 4, 5, 6, 7],
+                datasets: [{
+                    data: [20, 40, 30, 60, 50, 80, 75],
+                    borderColor: '#31449b',
+                    borderWidth: 3,
+                    fill: true,
+                    backgroundColor: createGradient(medicalCtx),
+                    tension: 0.4
+                }]
+            },
+            options: commonOptions
+        });
+
+        const veterinaryCtx = document.getElementById('veterinaryChart').getContext('2d');
+        new Chart(veterinaryCtx, {
+            type: 'line',
+            data: {
+                labels: [1, 2, 3, 4, 5, 6, 7],
+                datasets: [{
+                    data: [30, 20, 50, 40, 60, 55, 90],
+                    borderColor: '#31449b',
+                    borderWidth: 3,
+                    fill: true,
+                    backgroundColor: createGradient(veterinaryCtx),
+                    tension: 0.4
+                }]
+            },
+            options: commonOptions
+        });
+    });
+</script>
+{% endblock %}
