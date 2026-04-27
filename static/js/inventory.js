@@ -7,43 +7,41 @@
 (function () {
   'use strict';
 
-  window.initInventory = async function() {
+  window.initInventory = async function () {
     // ── State ────────────────────────────────────
-    let categories     = [];
-    let subcategories  = [];
-    let items          = [];
+    let categories = [];
+    let subcategories = [];
+    let items = [];
 
-    let activeCatIndex = 0;   // index into categories[]
-    let activeSubId    = null; // null = all subcats
-    let expandedItemId = null; // row currently expanded
-    let editingItemId  = null; // row in edit-save mode
+    let activeCatId = null;
+    let activeSubId = null;
+    let expandedItemId = null;
+    let editingItemId = null;
     let deleteTargetId = null;
 
     // ── DOM refs ─────────────────────────────────
-    const catLabel       = document.getElementById('catLabel');
-    const catPrev        = document.getElementById('catPrev');
-    const catNext        = document.getElementById('catNext');
-    const subTabs        = document.getElementById('subcategoryTabs');
-    const tableBody      = document.getElementById('inventoryBody');
-    const searchInput    = document.getElementById('searchInput');
-    const sortSelect     = document.getElementById('sortSelect');
-    const btnCreateNew   = document.getElementById('btnCreateNew');
-    const createModal    = document.getElementById('createModal');
-    const createBack     = document.getElementById('createBack');
-    const createNext     = document.getElementById('createNext');
+    const categorySelect = document.getElementById('categorySelect');
+    const subcategorySelect = document.getElementById('subcategorySelect');
+    const tableBody = document.getElementById('inventoryBody');
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortSelect');
+    const btnCreateNew = document.getElementById('btnCreateNew');
+    const createModal = document.getElementById('createModal');
+    const createBack = document.getElementById('createBack');
+    const createNext = document.getElementById('createNext');
     const createCategory = document.getElementById('createCategory');
-    const createSubcat   = document.getElementById('createSubcategory');
-    const createQty      = document.getElementById('createQuantity');
-    const createName     = document.getElementById('createName');
-    const deleteModal    = document.getElementById('deleteModal');
-    const deleteCancelBtn= document.getElementById('deleteCancelBtn');
-    const deleteConfirmBtn=document.getElementById('deleteConfirmBtn');
-    const successModal   = document.getElementById('successModal');
-    const successTitle   = document.getElementById('successTitle');
+    const createSubcat = document.getElementById('createSubcategory');
+    const createQty = document.getElementById('createQuantity');
+    const createName = document.getElementById('createName');
+    const deleteModal = document.getElementById('deleteModal');
+    const deleteCancelBtn = document.getElementById('deleteCancelBtn');
+    const deleteConfirmBtn = document.getElementById('deleteConfirmBtn');
+    const successModal = document.getElementById('successModal');
+    const successTitle = document.getElementById('successTitle');
     const successContBtn = document.getElementById('successContinueBtn');
-    const toast          = document.getElementById('toast');
+    const toast = document.getElementById('toast');
 
-    if (!catLabel) return; // Not on inventory page
+    if (!categorySelect) return;
 
     // ── API helpers ──────────────────────────────
     async function apiFetch(url, options = {}) {
@@ -69,12 +67,11 @@
     }
 
     async function loadItems() {
-      const cat = categories[activeCatIndex];
       const params = new URLSearchParams();
-      if (cat)          params.set('category_id', cat.id);
-      if (activeSubId)  params.set('subcategory_id', activeSubId);
+      if (activeCatId) params.set('category_id', activeCatId);
+      if (activeSubId) params.set('subcategory_id', activeSubId);
       const search = searchInput.value.trim();
-      if (search)       params.set('search', search);
+      if (search) params.set('search', search);
       params.set('sort', sortSelect.value);
 
       const resp = await apiFetch(`/api/inventory?${params}`);
@@ -82,39 +79,45 @@
       renderTable();
     }
 
-    // ── Category Bar ─────────────────────────────
-    function renderCategoryBar() {
+    // ── Category & Subcategory Filters ───────────
+    function renderFilters() {
       if (!categories.length) return;
-      const cat = categories[activeCatIndex];
-      catLabel.textContent = cat ? cat.name : 'Category';
 
-      // Subcategory tabs for this category
-      const subs = subcategories.filter(s => s.category_id === cat.id);
-      subTabs.innerHTML = '';
-      subs.forEach(s => {
-        const btn = document.createElement('button');
-        btn.className = 'sub-tab' + (activeSubId === s.id ? ' active' : '');
-        btn.textContent = s.name;
-        btn.dataset.id = s.id;
-        btn.addEventListener('click', () => {
-          activeSubId = activeSubId === s.id ? null : s.id;
-          renderCategoryBar();
-          loadItems();
+      // Populate Category Dropdown if not already done
+      if (categorySelect.options.length <= 1) {
+        categories.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.name;
+          categorySelect.appendChild(opt);
         });
-        subTabs.appendChild(btn);
-      });
+      }
+
+      // Populate Subcategory Dropdown based on active category
+      subcategorySelect.innerHTML = '<option value="">All Subcategories</option>';
+      if (activeCatId) {
+        const subs = subcategories.filter(s => s.category_id == activeCatId);
+        subs.forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s.id;
+          opt.textContent = s.name;
+          subcategorySelect.appendChild(opt);
+        });
+      }
+
+      categorySelect.value = activeCatId || '';
+      subcategorySelect.value = activeSubId || '';
     }
 
-    catPrev.addEventListener('click', () => {
-      activeCatIndex = (activeCatIndex - 1 + categories.length) % categories.length;
+    categorySelect.addEventListener('change', () => {
+      activeCatId = categorySelect.value || null;
       activeSubId = null;
-      renderCategoryBar();
+      renderFilters();
       loadItems();
     });
-    catNext.addEventListener('click', () => {
-      activeCatIndex = (activeCatIndex + 1) % categories.length;
-      activeSubId = null;
-      renderCategoryBar();
+
+    subcategorySelect.addEventListener('change', () => {
+      activeSubId = subcategorySelect.value || null;
       loadItems();
     });
 
@@ -177,14 +180,14 @@
       tr.dataset.detailFor = item.id;
 
       const fields = [
-        { label: 'ARTICLE',                  key: 'article' },
-        { label: 'STOCK NUMBER',             key: 'stock_number' },
-        { label: 'UNIT OF MEASURE',          key: 'unit_of_measure' },
-        { label: 'UNIT VALUE',               key: 'unit_value' },
+        { label: 'ARTICLE', key: 'article' },
+        { label: 'STOCK NUMBER', key: 'stock_number' },
+        { label: 'UNIT OF MEASURE', key: 'unit_of_measure' },
+        { label: 'UNIT VALUE', key: 'unit_value' },
         { label: 'BALANCE PER CARD (QUANTITY)', key: 'balance_per_card' },
-        { label: 'ON HAND PER COUNT (QUANTITY)',key: 'on_hand_per_count' },
-        { label: 'SHORTAGE (QUANTITY)',      key: 'shortage_quantity' },
-        { label: 'OVERAGE (VALUE)',          key: 'overage_value' },
+        { label: 'ON HAND PER COUNT (QUANTITY)', key: 'on_hand_per_count' },
+        { label: 'SHORTAGE (QUANTITY)', key: 'shortage_quantity' },
+        { label: 'OVERAGE (VALUE)', key: 'overage_value' },
       ];
 
       const fieldRows = fields.map(f => {
@@ -244,10 +247,10 @@
     function toggleExpand(itemId) {
       if (expandedItemId === itemId) {
         expandedItemId = null;
-        editingItemId  = null;
+        editingItemId = null;
       } else {
         expandedItemId = itemId;
-        editingItemId  = null;
+        editingItemId = null;
       }
       renderTable();
     }
@@ -290,7 +293,7 @@
     // ── Edit ──────────────────────────────────────
     function openEdit(itemId) {
       expandedItemId = itemId;
-      editingItemId  = itemId;
+      editingItemId = itemId;
       renderTable();
       const el = document.querySelector(`[data-detail-for="${itemId}"]`);
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -310,10 +313,10 @@
           method: 'PUT',
           body: JSON.stringify(payload)
         });
-        editingItemId  = null;
+        editingItemId = null;
         expandedItemId = null;
         await loadItems();
-        
+
         successTitle.textContent = 'ITEM EDITED!';
         successModal.classList.remove('hidden');
       } catch (e) {
@@ -340,10 +343,10 @@
       try {
         await apiFetch(`/api/inventory/${deleteTargetId}`, { method: 'DELETE' });
         expandedItemId = null;
-        editingItemId  = null;
+        editingItemId = null;
         deleteTargetId = null;
         await loadItems();
-        
+
         successTitle.textContent = 'ITEM DELETED!';
         successModal.classList.remove('hidden');
       } catch (e) {
@@ -381,10 +384,10 @@
     });
 
     createNext.addEventListener('click', async () => {
-      const catId  = parseInt(createCategory.value);
-      const subId  = parseInt(createSubcat.value);
-      const qty    = parseInt(createQty.value) || 0;
-      const name   = createName.value.trim();
+      const catId = parseInt(createCategory.value);
+      const subId = parseInt(createSubcat.value);
+      const qty = parseInt(createQty.value) || 0;
+      const name = createName.value.trim();
 
       if (!catId || !subId || !name) {
         showToast('Please fill in Category, Subcategory, and Name.', 'error');
@@ -404,7 +407,7 @@
 
         await loadItems();
         expandedItemId = newItem.id;
-        editingItemId  = newItem.id;
+        editingItemId = newItem.id;
         renderTable();
         successTitle.textContent = 'ITEM CREATED!';
         successModal.classList.remove('hidden');
@@ -430,8 +433,8 @@
     // ── Utility ───────────────────────────────────
     function escHtml(str) {
       return String(str)
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
     function showToast(msg, type = '') {
@@ -449,7 +452,13 @@
     // ── Run Init ─────────────────────────────────
     await loadCategories();
     await loadSubcategories();
-    renderCategoryBar();
+
+    // Default to the first category if none active to ensure subcategories are shown
+    if (categories.length > 0 && activeCatId === null) {
+      activeCatId = categories[0].id;
+    }
+
+    renderFilters();
     await loadItems();
     bindEvents();
   };

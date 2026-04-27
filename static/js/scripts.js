@@ -83,7 +83,26 @@
 
     // ── Initialization ─────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
-        // Any global init logic goes here
+        const sidebar = document.querySelector('.sidebar');
+        const mainContent = document.querySelector('.main-content');
+        const toggleBtn = document.getElementById('sidebarToggle');
+
+        if (toggleBtn && sidebar && mainContent) {
+            // Check if sidebar should be collapsed on mobile by default
+            if (window.innerWidth < 1024) {
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('expanded');
+            }
+
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+                toggleBtn.classList.toggle('active');
+            });
+        }
+
+        // Initialize dashboard charts if on dashboard
+        if (window.initDashboardCharts) window.initDashboardCharts();
     });
 
 })();

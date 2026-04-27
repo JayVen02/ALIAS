@@ -179,7 +179,14 @@ h4 {
     position: fixed;
     left: 0;
     top: 0;
-    z-index: 100;
+    z-index: 1000;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.collapsed {
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
 }
 
 .sidebar-logo {
@@ -385,6 +392,57 @@ input::placeholder {
     margin-left: 380px;
     flex: 1;
     min-height: 100vh;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-content.expanded {
+    margin-left: 0;
+}
+
+/* ── Sidebar Toggle ────────────────────────────── */
+.sidebar-toggle {
+    position: fixed;
+    top: 1.5rem;
+    left: 1.5rem;
+    z-index: 1100;
+    background: var(--primary-navy);
+    border: none;
+    border-radius: 8px; /* Slightly rounded for a modern look */
+    width: 42px;
+    height: 42px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.sidebar-toggle span {
+    display: block;
+    width: 22px;
+    height: 2.5px;
+    background-color: var(--white);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+    transform: scale(1.1);
+    background: var(--primary-blue);
+}
+
+/* No X animation - keep hamburger */
+.sidebar-toggle.active span {
+    transform: none !important;
+    opacity: 1 !important;
+}
+
+/* Ensure sidebar doesn't overlap toggle too much */
+.sidebar {
+    padding-top: 5rem; /* Give space for the toggle if it's over the sidebar */
 }
 
 /* ── Loader ─────────────────────────────────────── */

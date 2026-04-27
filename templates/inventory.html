@@ -35,14 +35,15 @@
 
     <!-- Category & Subcategory Navigation -->
     <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 2rem;">
-        <div class="category-nav">
-            <button id="catPrev">&lt;</button>
-            <span id="catLabel">Category</span>
-            <button id="catNext">&gt;</button>
+        <div class="select-wrapper" style="min-width: 200px;">
+            <select id="categorySelect">
+                <option value="">All Categories</option>
+            </select>
         </div>
-
-        <div id="subcategoryTabs" style="display: flex; gap: 0.8rem;">
-            <!-- Subcategory buttons loaded via JS -->
+        <div class="select-wrapper" style="min-width: 200px;">
+            <select id="subcategorySelect">
+                <option value="">All Subcategories</option>
+            </select>
         </div>
     </div>
 
