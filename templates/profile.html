@@ -5,7 +5,7 @@
     <div class="page-header-content">
         <div class="page-header-title">
             <h1 style="font-weight: 900; font-size: 5rem; letter-spacing: -2px;">USER PROFILE</h1>
-            <p class="welcome-msg" style="font-size: 1.5rem; font-style: italic;">Welcome, {{ session['username'] }}!</p>
+            <p class="welcome-msg" style="font-size: 1.5rem; font-style: italic;">Welcome, {{ user.full_name or user.email }}!</p>
         </div>
         <div class="header-logo-container">
             <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499759/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Logo_bpla9k.png" alt="ALIAS">
@@ -25,7 +25,7 @@
                      style="width: 100%; height: 100%; object-fit: cover;">
             {% else %}
                 <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #31449b 0%, #6a82fb 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
-                    <span style="font-size: 5rem; font-weight: 900;">{{ user.username[0].upper() }}</span>
+                    <span style="font-size: 5rem; font-weight: 900;">{{ (user.full_name or user.email)[0].upper() }}</span>
                     <p style="font-weight: 700; margin-top: 1rem;">No Photo Set</p>
                 </div>
             {% endif %}

@@ -2,12 +2,13 @@
 
 ALIAS is a modern, high-fidelity web application designed for the Alubijid Local Government Unit to manage inventory tracking and generate comprehensive physical count audits.
 
-## Key Features
+## System Features
 
-- **Unified Inventory Management**: Track articles, subcategories, and stock levels across multiple departments.
-- **Dynamic Audit System**: Generate real-time audit reports for specific categories and export them as professional PDFs.
-- **Role-Based Access**: Secure login system with email-based authentication and department-specific tracking.
-- **Transaction History**: Comprehensive logging of all inventory changes for full accountability.
+- **Inventory Tracking**: Easily add, update, and manage inventory items with automatic history tracking.
+- **Audit Reports**: Instantly create professional PDF reports for physical counts.
+- **Secure Access**: Login system using official email addresses with Admin and Staff permissions.
+- **Account Management**: Admins can create and manage staff accounts from a simple dashboard.
+- **User Profiles**: Personal profiles where staff can update their info and profile picture.
 
 ## Technology Stack
 
@@ -59,11 +60,24 @@ python app.py
 ```
 
 ## Project Structure
-- `/templates`: HTML fragments and layout templates.
-- `/static`: Design system (CSS) and interactivity (JS).
-- `/mySQL migration`: Database schema and master migration scripts.
-- `app.py`: Main Flask server and API routes.
-- `pdf_generator.py`: Core logic for professional PDF reports.
+
+```bash
+ALIAS/
+├── app.py              # Application entry point and factory
+├── config.py           # Environment-based configuration
+├── extensions.py       # Shared Flask extensions (MySQL)
+├── routes/             # routes for pages (Auth, Pages, API, PDF)
+├── services/           # logic and database queries
+├── templates/          # Jinja2 HTML templates and base layouts
+├── static/             # Design system (CSS) and modular JS
+└── pdf_generator.py    # Core logic for PDF audit reports
+```
+
+### Key Modules
+- **Routes**: Separates concerns into Authentication, Web Pages, Inventory API, and User Management.
+- **Services**: Centralizes database access to ensure consistency and prevent SQL injection.
+- **Static**: Organized into CSS design tokens and modular JavaScript handlers.
+- **Templates**: Uses a unified layout system (`base.html`).
 
 ---
 *Developed for ITCC42 - Alubijid Local Inventory and Audit System Project.*

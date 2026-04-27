@@ -730,3 +730,107 @@ input::placeholder {
 .detail-panel-actions .btn-back:hover {
     color: var(--primary-navy);
 }
+
+/* ── Manage Accounts ────────────────────────────── */
+.form-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+    margin-left: 4px;
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 0.3rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.role-admin {
+    background: #e8ecff;
+    color: var(--primary-navy);
+}
+
+.role-staff {
+    background: #e8f8ee;
+    color: #27ae60;
+}
+
+#accountsTable tbody tr:hover {
+    background: #f8faff;
+}
+
+/* Notification banner (manage accounts page) */
+#notifBanner {
+    display: none;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+#notifBanner.success {
+    background: #e8f8ee;
+    border: 1px solid #27ae60;
+    color: #27ae60;
+}
+
+#notifBanner.error {
+    background: #ffe8e8;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+}
+
+/* ── Toast notification (inventory page) ────────── */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    color: white;
+    z-index: 3000;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.toast.success {
+    background-color: var(--success);
+}
+
+.toast.error {
+    background-color: var(--danger);
+}
+
+/* ── Audit Category Buttons ─────────────────────── */
+.audit-category-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 800px;
+    padding: 2rem 3rem;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    text-decoration: none;
+    color: var(--primary-navy);
+    font-size: 1.2rem;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.audit-category-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(49, 68, 155, 0.1);
+    border-color: var(--primary-navy);
+}
