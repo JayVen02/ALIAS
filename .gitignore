@@ -1,51 +1,43 @@
-# Dont Touch this
+# ALIAS - Git Ignore
 
 # Virtual Environment
-.venv
-venv
-env
-ENV
-.env
+.venv/
+venv/
+env/
+ENV/
 
-# Python
-__pycache__
+# Python Cache & Build
+__pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
 *.egg
 
-# Flask instance folder
-instance/
+# Secrets
+.env
+.env.local
+.env.*
 
-# pytest
+# Flask & Web
+instance/
 .pytest_cache/
 
-# IDE
+# User Uploads & Generated Files
+static/uploads/*
+!static/uploads/.gitkeep
+*.pdf
+
+# IDE & Editor
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS
+# OS Files
 .DS_Store
 Thumbs.db
-
-# Environment variables
-.env
-.env.local
