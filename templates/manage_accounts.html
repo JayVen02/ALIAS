@@ -1,0 +1,410 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header-container">
+    <div class="page-header-content">
+        <div class="page-header-title">
+            <h1 style="font-weight: 900; font-size: 4rem; letter-spacing: -2px;">MANAGE ACCOUNTS</h1>
+            <p class="welcome-msg" style="font-size: 1.2rem; font-style: italic;">Create and manage staff access to the system</p>
+        </div>
+        <div class="header-logo-container">
+            <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499759/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Logo_bpla9k.png" alt="ALIAS">
+            <p class="header-logo-text">ALUBIJID LOCAL INVENTORY<br>AND AUDIT SYSTEM</p>
+        </div>
+    </div>
+</div>
+
+<div style="padding: 0 2rem 2rem;">
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+            <div style="background: #ffe8e8; border: 1px solid var(--danger); color: var(--danger); padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; font-weight: 700;">
+                {{ msg }}
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Notification Banner -->
+    <div id="notifBanner" style="display:none; align-items:center; gap:1rem; padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; font-weight: 700;"></div>
+
+    <!-- Toolbar -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <div>
+            <h2 style="color: var(--primary-navy); font-weight: 900; font-size: 1.4rem;">STAFF ACCOUNTS</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 2px;">
+                <span id="accountCount">{{ staff_users | length }}</span> account(s) in the system
+            </p>
+        </div>
+        <button class="btn-primary" onclick="openCreateModal()" style="padding: 0.8rem 2rem; border-radius: 25px; border: none; cursor: pointer; font-weight: 800; font-size: 0.9rem;">
+            + CREATE ACCOUNT
+        </button>
+    </div>
+
+    <!-- Accounts Table -->
+    <div class="card" style="border-radius: 24px; padding: 0; overflow: hidden;">
+        <table id="accountsTable" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: var(--primary-navy); color: white;">
+                    <th style="padding: 1.2rem 1.5rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;">#</th>
+                    <th style="padding: 1.2rem 1.5rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;">Full Name</th>
+                    <th style="padding: 1.2rem 1.5rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;">Username</th>
+                    <th style="padding: 1.2rem 1.5rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;">Email</th>
+                    <th style="padding: 1.2rem 1.5rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;">Role</th>
+                    <th style="padding: 1.2rem 1.5rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;">Created</th>
+                    <th style="padding: 1.2rem 1.5rem; text-align: center; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="accountsTbody">
+                {% for user in staff_users %}
+                <tr data-id="{{ user.id }}" style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 1rem 1.5rem; color: var(--text-muted); font-size: 0.85rem; font-weight: 700;">{{ loop.index }}</td>
+                    <td style="padding: 1rem 1.5rem; font-weight: 700; color: var(--primary-navy);">{{ user.full_name or '—' }}</td>
+                    <td style="padding: 1rem 1.5rem; font-weight: 600; color: var(--text-dark);">{{ user.username }}</td>
+                    <td style="padding: 1rem 1.5rem; color: var(--text-muted); font-size: 0.9rem;">{{ user.email or '—' }}</td>
+                    <td style="padding: 1rem 1.5rem;">
+                        <span class="role-badge role-{{ user.role or 'staff' }}">
+                            {{ (user.role or 'staff') | upper }}
+                        </span>
+                    </td>
+                    <td style="padding: 1rem 1.5rem; color: var(--text-muted); font-size: 0.85rem;">
+                        {% if user.created_at %}
+                            {{ user.created_at.strftime('%b %d, %Y') if user.created_at else '—' }}
+                        {% else %}—{% endif %}
+                    </td>
+                    <td style="padding: 1rem 1.5rem; text-align: center;">
+                        <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                            <button onclick="openEditModal({{ user.id }}, '{{ user.username }}', '{{ user.email or '' }}', '{{ user.full_name or '' }}', '{{ user.role or 'staff' }}')"
+                                style="background: var(--primary-navy); color: white; border: none; padding: 0.4rem 1rem; border-radius: 20px; cursor: pointer; font-size: 0.75rem; font-weight: 700;">
+                                EDIT
+                            </button>
+                            <button onclick="deleteAccount({{ user.id }}, '{{ user.username }}')"
+                                style="background: var(--danger); color: white; border: none; padding: 0.4rem 1rem; border-radius: 20px; cursor: pointer; font-size: 0.75rem; font-weight: 700;">
+                                DELETE
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr id="emptyRow">
+                    <td colspan="7" style="padding: 3rem; text-align: center; color: var(--text-muted); font-weight: 600;">
+                        No staff accounts found. Create one to get started.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- ===== CREATE ACCOUNT MODAL ===== -->
+<div id="createModal" class="modal hidden">
+    <div class="modal-content" style="max-width: 1000px;">
+        <h2 style="color: var(--primary-navy); margin-bottom: 0.5rem; text-align: center; font-weight: 900;">CREATE STAFF ACCOUNT</h2>
+        <p style="color: var(--text-muted); text-align: center; font-size: 0.85rem; margin-bottom: 1.8rem;">Fill in the details below to create a new system account.</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <!-- Full Name -->
+            <div style="grid-column: span 2;">
+                <label class="form-label">FULL NAME</label>
+                <input type="text" id="c_full_name" placeholder="e.g. Jeremy Barcos" class="modal-input">
+            </div>
+            <!-- Username -->
+            <div>
+                <label class="form-label">USERNAME <span style="color:var(--danger)">*</span></label>
+                <input type="text" id="c_username" placeholder="e.g. jbarcos" class="modal-input">
+            </div>
+            <!-- Email -->
+            <div>
+                <label class="form-label">EMAIL ADDRESS <span style="color:var(--danger)">*</span></label>
+                <input type="email" id="c_email" placeholder="e.g. jbarcos@gso.gov.ph" class="modal-input">
+            </div>
+            <!-- Password -->
+            <div>
+                <label class="form-label">PASSWORD <span style="color:var(--danger)">*</span></label>
+                <div style="position: relative;">
+                    <input type="password" id="c_password" class="modal-input" style="padding-right: 3rem;">
+                    <button type="button" onclick="togglePassword('c_password', this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--text-muted); font-size:0.8rem; font-weight:700;">SHOW</button>
+                </div>
+            </div>
+            <!-- Confirm Password -->
+            <div>
+                <label class="form-label">CONFIRM PASSWORD <span style="color:var(--danger)">*</span></label>
+                <div style="position: relative;">
+                    <input type="password" id="c_confirm_password" placeholder="Re-enter password" class="modal-input" style="padding-right: 3rem;">
+                    <button type="button" onclick="togglePassword('c_confirm_password', this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--text-muted); font-size:0.8rem; font-weight:700;">SHOW</button>
+                </div>
+            </div>
+            <!-- Role -->
+            <div style="grid-column: span 2;">
+                <label class="form-label">ROLE <span style="color:var(--danger)">*</span></label>
+                <select id="c_role" class="modal-input">
+                    <option value="staff" selected>Inventory Staff</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; margin-left: 4px;" id="roleHint">
+                    Inventory Staff can view and manage inventory items.
+                </p>
+            </div>
+        </div>
+
+        <div id="createError" style="display:none; background:#ffe8e8; border:1px solid var(--danger); color:var(--danger); padding:0.8rem 1rem; border-radius:10px; font-size:0.85rem; font-weight:700; margin-top:1rem;"></div>
+
+        <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.8rem;">
+            <button type="button" onclick="closeCreateModal()" style="background: var(--text-muted); color: white; padding: 0.8rem 2.5rem; border-radius: 25px; border: none; cursor: pointer; font-weight: 800;">CANCEL</button>
+            <button type="button" onclick="submitCreate()" id="createBtn" style="background: var(--primary-navy); color: white; padding: 0.8rem 2.5rem; border-radius: 25px; border: none; cursor: pointer; font-weight: 800;">CREATE ACCOUNT</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ===== EDIT ACCOUNT MODAL ===== -->
+<div id="editModal" class="modal hidden">
+    <div class="modal-content" style="max-width: 1000px;">
+        <h2 style="color: var(--primary-navy); margin-bottom: 0.5rem; text-align: center; font-weight: 900;">EDIT ACCOUNT</h2>
+        <p style="color: var(--text-muted); text-align: center; font-size: 0.85rem; margin-bottom: 1.8rem;">Leave the password fields blank to keep the current password.</p>
+        <input type="hidden" id="e_id">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div style="grid-column: span 2;">
+                <label class="form-label">FULL NAME</label>
+                <input type="text" id="e_full_name" placeholder="Full Name" class="modal-input">
+            </div>
+            <div>
+                <label class="form-label">USERNAME <span style="color:var(--danger)">*</span></label>
+                <input type="text" id="e_username" placeholder="Username" class="modal-input">
+            </div>
+            <div>
+                <label class="form-label">EMAIL ADDRESS <span style="color:var(--danger)">*</span></label>
+                <input type="email" id="e_email" placeholder="e.g. jbarcos@gso.gov.ph" class="modal-input">
+            </div>
+            <div>
+                <label class="form-label">NEW PASSWORD</label>
+                <div style="position: relative;">
+                    <input type="password" id="e_password" placeholder="Leave blank to keep current" class="modal-input" style="padding-right: 3rem;">
+                    <button type="button" onclick="togglePassword('e_password', this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--text-muted); font-size:0.8rem; font-weight:700;">SHOW</button>
+                </div>
+            </div>
+            <div>
+                <label class="form-label">CONFIRM NEW PASSWORD</label>
+                <div style="position: relative;">
+                    <input type="password" id="e_confirm_password" placeholder="Re-enter new password" class="modal-input" style="padding-right: 3rem;">
+                    <button type="button" onclick="togglePassword('e_confirm_password', this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--text-muted); font-size:0.8rem; font-weight:700;">SHOW</button>
+                </div>
+            </div>
+            <div style="grid-column: span 2;">
+                <label class="form-label">ROLE <span style="color:var(--danger)">*</span></label>
+                <select id="e_role" class="modal-input">
+                    <option value="staff">Inventory Staff</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="editError" style="display:none; background:#ffe8e8; border:1px solid var(--danger); color:var(--danger); padding:0.8rem 1rem; border-radius:10px; font-size:0.85rem; font-weight:700; margin-top:1rem;"></div>
+
+        <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.8rem;">
+            <button type="button" onclick="closeEditModal()" style="background: var(--text-muted); color: white; padding: 0.8rem 2.5rem; border-radius: 25px; border: none; cursor: pointer; font-weight: 800;">CANCEL</button>
+            <button type="button" onclick="submitEdit()" style="background: var(--primary-navy); color: white; padding: 0.8rem 2.5rem; border-radius: 25px; border: none; cursor: pointer; font-weight: 800;">SAVE CHANGES</button>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .form-label {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 5px;
+        margin-left: 4px;
+    }
+    .role-badge {
+        display: inline-block;
+        padding: 0.3rem 0.9rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+    }
+    .role-admin    { background: #e8ecff; color: var(--primary-navy); }
+    .role-staff    { background: #e8f8ee; color: #27ae60; }
+    #accountsTable tbody tr:hover { background: #f8faff; }
+    #notifBanner.success { background: #e8f8ee; border: 1px solid #27ae60; color: #27ae60; }
+    #notifBanner.error   { background: #ffe8e8; border: 1px solid var(--danger); color: var(--danger); }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function showNotif(msg, type = 'success') {
+        const b = document.getElementById('notifBanner');
+        b.textContent = msg;
+        b.className = type;
+        b.style.display = 'flex';
+        setTimeout(() => { b.style.display = 'none'; }, 4000);
+    }
+
+    function togglePassword(id, btn) {
+        const inp = document.getElementById(id);
+        if (inp.type === 'password') { inp.type = 'text'; btn.textContent = 'HIDE'; }
+        else { inp.type = 'password'; btn.textContent = 'SHOW'; }
+    }
+
+    const roleHints = {
+        staff:  'Inventory Staff can view and manage inventory items.',
+        admin:  'Admins have full access, including account management.'
+    };
+    document.getElementById('c_role').addEventListener('change', function () {
+        document.getElementById('roleHint').textContent = roleHints[this.value] || '';
+    });
+
+    function openCreateModal() {
+        ['c_full_name','c_username','c_email','c_password','c_confirm_password'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('c_role').value = 'staff';
+        document.getElementById('createError').style.display = 'none';
+        document.getElementById('createModal').classList.remove('hidden');
+    }
+    function closeCreateModal() {
+        document.getElementById('createModal').classList.add('hidden');
+    }
+
+    async function submitCreate() {
+        const btn = document.getElementById('createBtn');
+        const errEl = document.getElementById('createError');
+        errEl.style.display = 'none';
+
+        const username = document.getElementById('c_username').value.trim();
+        const password = document.getElementById('c_password').value;
+        const confirm  = document.getElementById('c_confirm_password').value;
+        const email    = document.getElementById('c_email').value.trim();
+        const full_name = document.getElementById('c_full_name').value.trim();
+        const role     = document.getElementById('c_role').value;
+
+        if (!username) { showErr(errEl, 'Username is required.'); return; }
+        if (!password) { showErr(errEl, 'Password is required.'); return; }
+        if (password !== confirm) { showErr(errEl, 'Passwords do not match.'); return; }
+        if (password.length < 6)  { showErr(errEl, 'Password must be at least 6 characters.'); return; }
+
+        btn.disabled = true;
+        btn.textContent = 'CREATING...';
+
+        try {
+            const res = await fetch('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password, email, full_name, role })
+            });
+            const data = await res.json();
+            if (!res.ok) { showErr(errEl, data.error || 'Failed to create account.'); return; }
+
+            closeCreateModal();
+            showNotif(`Account "${username}" created successfully!`, 'success');
+            setTimeout(() => location.reload(), 1200);
+        } catch(e) {
+            showErr(errEl, 'Network error. Please try again.');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'CREATE ACCOUNT';
+        }
+    }
+
+    function openEditModal(id, username, email, full_name, role) {
+        document.getElementById('e_id').value = id;
+        document.getElementById('e_username').value = username;
+        document.getElementById('e_email').value = email;
+        document.getElementById('e_full_name').value = full_name;
+        document.getElementById('e_role').value = role;
+        document.getElementById('e_password').value = '';
+        document.getElementById('e_confirm_password').value = '';
+        document.getElementById('editError').style.display = 'none';
+        document.getElementById('editModal').classList.remove('hidden');
+    }
+    function closeEditModal() {
+        document.getElementById('editModal').classList.add('hidden');
+    }
+
+    async function submitEdit() {
+        const errEl = document.getElementById('editError');
+        errEl.style.display = 'none';
+
+        const id       = document.getElementById('e_id').value;
+        const username = document.getElementById('e_username').value.trim();
+        const email    = document.getElementById('e_email').value.trim();
+        const full_name = document.getElementById('e_full_name').value.trim();
+        const role     = document.getElementById('e_role').value;
+        const password = document.getElementById('e_password').value;
+        const confirm  = document.getElementById('e_confirm_password').value;
+
+        if (!username) { showErr(errEl, 'Username is required.'); return; }
+        if (password && password !== confirm) { showErr(errEl, 'Passwords do not match.'); return; }
+        if (password && password.length < 6)  { showErr(errEl, 'Password must be at least 6 characters.'); return; }
+
+        const body = { username, email, full_name, role };
+        if (password) body.password = password;
+
+        try {
+            const res = await fetch(`/api/users/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            if (!res.ok) { showErr(errEl, data.error || 'Update failed.'); return; }
+
+            closeEditModal();
+            showNotif(`Account "${username}" updated successfully!`, 'success');
+            setTimeout(() => location.reload(), 1200);
+        } catch(e) {
+            showErr(errEl, 'Network error. Please try again.');
+        }
+    }
+
+async function deleteAccount(id, username) {
+        if (!confirm(`Are you sure you want to delete the account "${username}"?\nThis action cannot be undone.`)) return;
+        try {
+            const res = await fetch(`/api/users/${id}`, { method: 'DELETE' });
+
+            const text = await res.text();
+            let data = {};
+
+            try {
+                data = JSON.parse(text);
+            } catch(err) {
+                console.error("Server returned non-JSON response:", text);
+                showNotif('Server error: Unexpected response. Check the console.', 'error');
+                return;
+            }
+
+            if (!res.ok) {
+                showNotif(data.error || 'Delete failed.', 'error');
+                return;
+            }
+
+            showNotif(`Account "${username}" deleted.`, 'success');
+            setTimeout(() => location.reload(), 1000);
+
+        } catch(e) {
+            console.error("Fetch error:", e);
+            showNotif('Network error. Please try again.', 'error');
+        }
+    }
+
+    function showErr(el, msg) {
+        el.textContent = msg;
+        el.style.display = 'block';
+    }
+
+    ['createModal','editModal'].forEach(id => {
+        document.getElementById(id).addEventListener('click', function(e) {
+            if (e.target === this) this.classList.add('hidden');
+        });
+    });
+</script>
+{% endblock %}

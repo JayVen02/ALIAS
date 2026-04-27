@@ -10,6 +10,9 @@
             <li class="nav-item {{ 'active' if request.path == '/inventory' }}"><a href="/inventory">Inventory</a></li>
             <li class="nav-item {{ 'active' if request.path.startswith('/audit') }}"><a href="/audit">Audit</a></li>
             <li class="nav-item {{ 'active' if request.path == '/history' }}"><a href="/history">History</a></li>
+            {% if session.get('role') == 'admin' %}
+            <li class="nav-item {{ 'active' if request.path == '/manage-accounts' }}"><a href="/manage-accounts">Manage Accounts</a></li>
+            {% endif %}
         </ul>
     </nav>
 
