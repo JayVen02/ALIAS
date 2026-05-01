@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header-container">
+    <div class="page-header-content">
+        <div class="page-header-title">
+            <h1 style="font-size: 4rem;">ACCOUNTS</h1>
+            <p class="welcome-msg">Welcome, {{ session['full_name'] }}!</p>
+        </div>
+        <div class="header-logo-container">
+            <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1777188010/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_zc0nex.png" alt="ALIAS Header">
+        </div>
+    </div>
+</div>
+
+<div style="padding: 0 2rem 2rem;">
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+            <div style="background: #ffe8e8; border: 1px solid var(--danger); color: var(--danger); padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; font-weight: 700;">
+                {{ msg }}
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Notification Banner -->
+    <div id="notifBanner"></div>
+
+    <!-- Toolbar -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <div>
+            <h2 style="color: var(--primary-navy); font-weight: 900; font-size: 1.4rem;">STAFF ACCOUNTS</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 2px;">
+                <span id="accountCount">{{ staff_users | length }}</span> account(s) in the system
+            </p>
+        </div>
+        <button class="btn-primary" onclick="openCreateModal()">
+            + CREATE ACCOUNT
+        </button>
+    </div>
+
+    <!-- Accounts Table -->
+    <div class="data-table-container">
+        <table class="data-table" id="accountsTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Full Name</th>
+                    <th>Email Address</th>
+                    <th>Role</th>
+                    <th>Created</th>
+                    <th style="text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="accountsTbody">
+                {% for user in staff_users %}
+                <tr>
+                    <td style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700;">{{ loop.index }}</td>
+                    <td style="font-weight: 700; color: var(--primary-navy);">{{ user.full_name or '—' }}</td>
+                    <td style="color: var(--text-muted); font-size: 0.9rem;">{{ user.email }}</td>
+                    <td>
+                        <span class="role-badge role-{{ user.role or 'staff' }}">
+                            {{ (user.role or 'staff') | upper }}
+                        </span>
+                    </td>
+                    <td style="color: var(--text-muted); font-size: 0.85rem;">
+                        {% if user.created_at %}
+                            {{ user.created_at if user.created_at else '—' }}
+                        {% else %}—{% endif %}
+                    </td>
+                    <td style="text-align: center;">
+                        <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                            <button 
+                                class="btn-primary"
+                                data-id="{{ user.id }}"
+                                data-email="{{ user.email }}"
+                                data-fullname="{{ user.full_name or '' }}"
+                                data-role="{{ user.role or 'staff' }}"
+                                onclick="handleEditAccount(this)"
+                                style="padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.75rem;">
+                                EDIT
+                            </button>
+                            <button 
+                                class="btn-primary"
+                                data-id="{{ user.id }}"
+                                data-email="{{ user.email }}"
+                                onclick="handleDeleteAccount(this)"
+                                style="background: var(--danger); padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.75rem;">
+                                DELETE
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr id="emptyRow">
+                    <td colspan="7" style="padding: 3rem; text-align: center; color: var(--text-muted); font-weight: 600;">
+                        No staff accounts found. Create one to get started.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- ===== CREATE ACCOUNT MODAL ===== -->
+<div id="createModal" class="modal hidden">
+    <div class="modal-content" style="max-width: 1000px;">
+        <h2 style="color: var(--primary-navy); margin-bottom: 0.5rem; text-align: center; font-weight: 900;">CREATE STAFF ACCOUNT</h2>
+        <p style="color: var(--text-muted); text-align: center; font-size: 0.85rem; margin-bottom: 1.8rem;">Fill in the details below to create a new system account.</p>
+
+        <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+            <!-- Full Name -->
+            <div>
+                <label class="form-label">FULL NAME</label>
+                <input type="text" id="c_full_name" placeholder="e.g. Jeremy Barcos" class="modal-input">
+            </div>
+            <!-- Email -->
+            <div>
+                <label class="form-label">EMAIL ADDRESS <span style="color:var(--danger)">*</span></label>
+                <input type="email" id="c_email" placeholder="e.g. jbarcos@gso.gov.ph" class="modal-input">
+            </div>
+            <!-- Password Row -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                    <label class="form-label">PASSWORD <span style="color:var(--danger)">*</span></label>
+                    <div style="position: relative;">
+                        <input type="password" id="c_password" class="modal-input" style="padding-right: 3rem;">
+                        <button type="button" onclick="togglePassword('c_password', this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--text-muted); font-size:0.8rem; font-weight:700;">SHOW</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">CONFIRM PASSWORD <span style="color:var(--danger)">*</span></label>
+                    <div style="position: relative;">
+                        <input type="password" id="c_confirm_password" placeholder="Re-enter password" class="modal-input" style="padding-right: 3rem;">
+                        <button type="button" onclick="togglePassword('c_confirm_password', this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--text-muted); font-size:0.8rem; font-weight:700;">SHOW</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Confirm Password -->
+            <div>
+                <label class="form-label">CONFIRM PASSWORD <span style="color:var(--danger)">*</span></label>
+                <div style="position: relative;">
+                    <input type="password" id="c_confirm_password" placeholder="Re-enter password" class="modal-input" style="padding-right: 3rem;">
+                    <button type="button" onclick="togglePassword('c_confirm_password', this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--text-muted); font-size:0.8rem; font-weight:700;">SHOW</button>
+                </div>
+            </div>
+            <!-- Role -->
+            <div style="grid-column: span 2;">
+                <label class="form-label">ROLE <span style="color:var(--danger)">*</span></label>
+                <select id="c_role" class="modal-input">
+                    <option value="staff" selected>Inventory Staff</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; margin-left: 4px;" id="roleHint">
+                    Inventory Staff can view and manage inventory items.
+                </p>
+            </div>
+        </div>
+
+        <div id="createError" style="display:none; background:#ffe8e8; border:1px solid var(--danger); color:var(--danger); padding:0.8rem 1rem; border-radius:10px; font-size:0.85rem; font-weight:700; margin-top:1rem;"></div>
+
+        <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.8rem;">
+            <button type="button" onclick="closeCreateModal()" style="background: var(--text-muted); color: white; padding: 0.8rem 2.5rem; border-radius: 25px; border: none; cursor: pointer; font-weight: 800;">CANCEL</button>
+            <button type="button" onclick="submitCreate()" id="createBtn" style="background: var(--primary-navy); color: white; padding: 0.8rem 2.5rem; border-radius: 25px; border: none; cursor: pointer; font-weight: 800;">CREATE ACCOUNT</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- ===== EDIT ACCOUNT MODAL ===== -->
+<div id="editModal" class="modal hidden">
+    <div class="modal-content" style="max-width: 1000px;">
+        <h2 style="color: var(--primary-navy); margin-bottom: 0.5rem; text-align: center; font-weight: 900;">EDIT ACCOUNT</h2>
+        <p style="color: var(--text-muted); text-align: center; font-size: 0.85rem; margin-bottom: 1.8rem;">Leave the password fields blank to keep the current password.</p>
+        <input type="hidden" id="e_id">
+
+        <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+            <div>
+                <label class="form-label">FULL NAME</label>
+                <input type="text" id="e_full_name" placeholder="Full Name" class="modal-input">
+            </div>
+            <div>
+                <label class="form-label">EMAIL ADDRESS <span style="color:var(--danger)">*</span></label>
+                <input type="email" id="e_email" placeholder="e.g. jbarcos@gso.gov.ph" class="modal-input">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                    <label class="form-label">NEW PASSWORD</label>
+                    <div style="position: relative;">
+                        <input type="password" id="e_password" placeholder="Leave blank" class="modal-input" style="padding-right: 3rem;">
+                        <button type="button" onclick="togglePassword('e_password', this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--text-muted); font-size:0.8rem; font-weight:700;">SHOW</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">CONFIRM PASSWORD</label>
+                    <div style="position: relative;">
+                        <input type="password" id="e_confirm_password" placeholder="Re-enter password" class="modal-input" style="padding-right: 3rem;">
+                        <button type="button" onclick="togglePassword('e_confirm_password', this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--text-muted); font-size:0.8rem; font-weight:700;">SHOW</button>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <label class="form-label">ROLE <span style="color:var(--danger)">*</span></label>
+                <select id="e_role" class="modal-input">
+                    <option value="staff">Inventory Staff</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="editError" style="display:none; background:#ffe8e8; border:1px solid var(--danger); color:var(--danger); padding:0.8rem 1rem; border-radius:10px; font-size:0.85rem; font-weight:700; margin-top:1rem;"></div>
+
+        <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.8rem;">
+            <button type="button" onclick="closeEditModal()" style="background: var(--text-muted); color: white; padding: 0.8rem 2.5rem; border-radius: 25px; border: none; cursor: pointer; font-weight: 800;">CANCEL</button>
+            <button type="button" onclick="submitEdit()" style="background: var(--primary-navy); color: white; padding: 0.8rem 2.5rem; border-radius: 25px; border: none; cursor: pointer; font-weight: 800;">SAVE CHANGES</button>
+        </div>
+    </div>
+</div>
+
+
+{# Page-specific styles live in main.css under .form-label, .role-badge, etc. #}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/manage_accounts.js') }}"></script>
+{% endblock %}

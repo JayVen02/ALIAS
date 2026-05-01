@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - ALIAS</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+
+<body>
+
+  <div class="login-container">
+    <!-- Left side: Branding -->
+    <div class="login-left">
+      <img
+        src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499759/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Logo_bpla9k.png"
+        alt="ALIAS Branding" class="branding-logo-large">
+    </div>
+
+    <!-- Right side: Form -->
+    <div class="login-right">
+      <div class="login-card">
+        <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499759/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Alubijid_Misamis_Oriental_1_nmi7og.png" alt="Seal"
+          class="seal-img">
+
+        <h1 class="alias-title">ALIAS</h1>
+        <p class="alias-subtitle">ALUBIJID LOCAL INVENTORY<br>AND AUDIT SYSTEM</p>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="error-msg">
+          {{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+          <div class="input-group">
+            <input type="email" name="email" placeholder="Email Address" required>
+          </div>
+          <div class="input-group">
+            <input type="password" name="password" placeholder="Password" required>
+          </div>
+          <button type="submit" class="btn-login">Login</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

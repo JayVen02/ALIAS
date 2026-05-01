@@ -1,0 +1,43 @@
+# ALIAS - Git Ignore
+
+# Virtual Environment
+.venv/
+venv/
+env/
+ENV/
+
+# Python Cache & Build
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Secrets
+.env
+.env.local
+.env.*
+
+# Flask & Web
+instance/
+.pytest_cache/
+
+# User Uploads & Generated Files
+static/uploads/*
+!static/uploads/.gitkeep
+*.pdf
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS Files
+.DS_Store
+Thumbs.db

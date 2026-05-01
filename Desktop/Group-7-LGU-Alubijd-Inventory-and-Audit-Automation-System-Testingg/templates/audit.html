@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header-container">
+    <div class="page-header-content">
+        <div class="page-header-title">
+            <h1 style="font-size: 8rem;">AUDIT</h1>
+            <p class="welcome-msg">Welcome, {{ session['full_name'] }}!</p>
+        </div>
+        <div class="header-logo-container">
+            <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1777188010/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_zc0nex.png" alt="ALIAS Header">
+        </div>
+    </div>
+</div>
+
+<div class="audit-body-wrapper" style="padding: 0 4rem 4rem; display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
+    {% for cat in categories %}
+    <a href="/audit/history/{{ cat.name }}" class="audit-category-btn">
+        {% if cat.name == 'VEHICLE & SPARE PARTS' %}
+        Physical Count of Inventories Transport Vehicle
+        {% elif cat.name == 'EMERGENCY SUPPLIES' %}
+        Physical Count of Inventories Emergency Supplies
+        {% elif cat.name == 'DRUGS & MEDICINES' %}
+        Physical Count of Inventories Medical Supplies
+        {% elif cat.name == 'VETERINARY SUPPLIES' %}
+        Physical Count of Inventories Veterinary Supplies
+        {% else %}
+        Physical Count of Inventories {{ cat.name | title }}
+        {% endif %}
+    </a>
+    {% endfor %}
+</div>
+
+{# .audit-category-btn styles live in main.css #}
+{% endblock %}
