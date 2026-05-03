@@ -66,7 +66,6 @@
         </table>
     </div>
 </div>
-
 <!-- Modals & Toasts -->
 <div id="createModal" class="modal hidden">
     <div class="modal-content">
@@ -75,7 +74,7 @@
             <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
                 <select id="createCategory" class="modal-input" style="flex: 2;"></select>
                 <select id="createSubcategory" class="modal-input" style="flex: 2;"></select>
-                <input type="number" id="createQuantity" placeholder="Qty" class="modal-input" style="flex: 1;">
+                <input type="number" id="createQuantity" placeholder="Qty" class="modal-input" min="1">
             </div>
             <input type="text" id="createName" placeholder="Item Name" class="modal-input" style="width: 100%; margin-bottom: 1.5rem;">
             <div style="display: flex; justify-content: center; gap: 1rem;">
@@ -116,4 +115,23 @@
         if (window.initInventory) window.initInventory();
     });
 </script>
+<!-- CREATE CONFIRM MODAL -->
+<div id="createConfirmModal" class="modal hidden">
+  <div class="modal-content" style="max-width: 400px; text-align: center; padding: 2.5rem;">
+    <h2 style="color: var(--primary-navy); margin-bottom: 1rem; font-weight: 800;">
+      Create Item?
+    </h2>
+    <p style="margin-bottom: 2rem; color: var(--text-muted); font-weight: 600;">
+      Are you sure you want to create this item?
+    </p>
+    <div style="display: flex; justify-content: center; gap: 1rem;">
+      <button id="createCancelBtn" class="btn-primary" style="background: var(--text-muted); padding: 0.7rem 2rem; border-radius: 12px;">
+        Cancel
+      </button>
+      <button id="createConfirmBtn" class="btn-primary" style="background: #31449B; padding: 0.7rem 2rem; border-radius: 12px;">
+        Confirm
+      </button>
+    </div>
+  </div>
+</div>
 {% endblock %}

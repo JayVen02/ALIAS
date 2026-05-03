@@ -53,17 +53,38 @@ def api_get_inventory():
 @login_required
 def api_create_item():
     data = request.json or {}
+
+    name = (data.get("name") or "").strip()
+    category_id = data.get("category_id")
+    subcategory_id = data.get("subcategory_id")
+
+
+    if not name or not category_id or not subcategory_id:
+        return {"error": "Missing required fields."}, 400
+
+    quantity = data.get("quantity", 0)
+
+
+    try:
+        quantity = int(quantity)
+    except (TypeError, ValueError):
+        return {"error": "Invalid quantity."}, 400
+
+    if quantity <= 0:
+        return {"error": "Quantity must be greater than 0."}, 400
+
     new_id = create_item(
         mysql,
-        data.get("category_id"),
-        data.get("subcategory_id"),
-        data.get("name"),
-        data.get("quantity", 0),
+        category_id,
+        subcategory_id,
+        name,
+        quantity,
     )
+
     log_action(mysql, new_id, session.get("user_id"), "CREATE", new_value=str(data))
     mysql.connection.commit()
-    return {"id": new_id}, 201
 
+    return {"id": new_id}, 201
 
 @inventory_bp.route("/inventory/<int:item_id>", methods=["PUT"])
 @login_required

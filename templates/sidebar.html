@@ -36,8 +36,7 @@
                 <a href="{{ url_for('pages.profile') }}" class="view-profile-link">View Profile &gt;</a>
             </div>
         </div>
-        <form method="POST" action="{{ url_for('auth.logout') }}" class="logout-form">
-            <button type="submit" class="logout-btn-large">Logout</button>
-        </form>
+      <button id="logoutBtn" class="logout-btn-large">Logout</button>
+        <form id="logoutForm" method="POST" action="{{ url_for('auth.logout') }}" style="display:none;"></form>
     </div>
 </aside>

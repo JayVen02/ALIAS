@@ -17,7 +17,17 @@
     <!-- main.css -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
-
+<!-- LOGOUT CONFIRM MODAL -->
+<div id="logoutModal" class="modal hidden">
+  <div class="modal-content" style="max-width: 350px; text-align: center; padding: 2rem;">
+    <h2 style="margin-bottom: 1rem;">Logout?</h2>
+    <p style="margin-bottom: 2rem;">Are you sure you want to logout?</p>
+    <div style="display:flex; gap:1rem; justify-content:center;">
+      <button id="logoutCancel" class="btn-primary" style="background: gray;">Cancel</button>
+      <button id="logoutConfirm" class="btn-primary" style="background: #e74c3c;">Logout</button>
+    </div>
+  </div>
+</div>
 <body>
     <div class="dashboard-container">
         <!-- Sidebar Include -->
@@ -36,7 +46,8 @@
     </div>
 
     <!-- Global Scripts -->
-    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+   <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/logout.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
 
