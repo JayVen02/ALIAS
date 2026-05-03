@@ -383,10 +383,10 @@ function populateCreateDropdowns() {
 }
 
 createCategory.addEventListener('change', () => {
-  const catId = parseInt(createCategory.value);
+  const catId = createCategory.value;
   createSubcat.innerHTML = '<option value="">Subcategory</option>';
   subcategories
-    .filter(s => s.category_id === catId)
+    .filter(s => s.category_id == catId)
     .forEach(s => {
       const opt = document.createElement('option');
       opt.value = s.id;
@@ -397,8 +397,8 @@ createCategory.addEventListener('change', () => {
 
 // STEP 1: CLICK CREATE → SHOW CONFIRM
 createNext.addEventListener('click', () => {
-  const catId = parseInt(createCategory.value);
-  const subId = parseInt(createSubcat.value);
+  const catId = createCategory.value;
+  const subId = createSubcat.value;
   const qty = parseInt(createQty.value) || 0;
   const name = createName.value.trim();
 
@@ -458,16 +458,14 @@ createConfirmBtn.addEventListener('click', async () => {
 // CANCEL CONFIRM
 createCancelBtn.addEventListener('click', () => {
   createConfirmModal.classList.add('hidden');
+});
 
 // SUCCESS MODAL CONTINUE BUTTON
-const successContBtn = document.getElementById('successContinueBtn');
-
 if (successContBtn) {
   successContBtn.onclick = () => {
     successModal.classList.add('hidden');
   };
 }
-});
 
 
     // ── Search & Sort ─────────────────────────────
