@@ -448,26 +448,22 @@ createConfirmBtn.addEventListener('click', async () => {
     editingItemId = newItem.id;
     renderTable();
 
-    successTitle.textContent = 'ITEM CREATED!';
+    successTitle.textContent = newItem.updated ? 'QUANTITY UPDATED!' : 'ITEM CREATED!';
     successModal.classList.remove('hidden');
   } catch (e) {
     showToast('Error: ' + e.message, 'error');
   }
 });
 
-// CANCEL CONFIRM
 createCancelBtn.addEventListener('click', () => {
   createConfirmModal.classList.add('hidden');
-
-// SUCCESS MODAL CONTINUE BUTTON
-const successContBtn = document.getElementById('successContinueBtn');
+});
 
 if (successContBtn) {
   successContBtn.onclick = () => {
     successModal.classList.add('hidden');
   };
 }
-});
 
 
     // ── Search & Sort ─────────────────────────────
