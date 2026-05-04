@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header-container">
+    <div class="page-header-content">
+        <div class="page-header-title">
+            <h1 style="font-weight: 900; font-size: 5rem; letter-spacing: -2px;">DASHBOARD</h1>
+            <p class="welcome-msg" style="font-size: 1.5rem; font-style: italic;">Welcome, {{ session['full_name'] }}!</p>
+        </div>
+        <div class="header-logo-container">
+            <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1777188010/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_zc0nex.png" alt="ALIAS Header">
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-content" style="padding: 0 2rem 2rem; text-align: center;">
+    <!-- Supply Trend Analysis -->
+    <div style="margin-bottom: 3rem;">
+        <h2 style="color: var(--primary-navy); font-weight: 900; font-size: 2.2rem; margin-bottom: 0.2rem;">SUPPLY TREND ANALYSIS</h2>
+        <p style="color: var(--primary-navy); font-style: italic; font-weight: 600; margin-bottom: 2rem;">Emergency Supply, Medical Supply, Veterinary Supply</p>
+        
+        <div class="charts-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
+            <!-- Emergency Supply -->
+            <div class="chart-container">
+                <div style="height: 150px; position: relative;">
+                    <canvas id="emergencyChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <h4 style="color: var(--primary-navy); font-weight: 800; margin-bottom: 0.2rem;">Emergency Supply</h4>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; font-style: italic;">Inflow and Outflow 2025</p>
+                </div>
+            </div>
+            <!-- Medical Supply -->
+            <div class="chart-container">
+                <div style="height: 150px; position: relative;">
+                    <canvas id="medicalChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <h4 style="color: var(--primary-navy); font-weight: 800; margin-bottom: 0.2rem;">Medical Supply</h4>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; font-style: italic;">Inflow and Outflow 2025</p>
+                </div>
+            </div>
+            <!-- Veterinary Supply -->
+            <div class="chart-container">
+                <div style="height: 150px; position: relative;">
+                    <canvas id="veterinaryChart"></canvas>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <h4 style="color: var(--primary-navy); font-weight: 800; margin-bottom: 0.2rem;">Veterinary Supply</h4>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; font-style: italic;">Inflow and Outflow 2025</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory Update History -->
+    <div style="margin-top: 3rem;">
+        <h2 style="color: var(--primary-navy); font-weight: 900; font-size: 2.2rem; margin-bottom: 2rem;">INVENTORY UPDATE HISTORY</h2>
+        <div class="data-table-container" style="border: none; box-shadow: none;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>CATEGORY</th>
+                        <th>SUBCATEGORY</th>
+                        <th>NAME</th>
+                        <th>DATE CREATED</th>
+                        <th>DATE UPDATED</th>
+                        <th>QUANTITY</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in recent_items %}
+                    <tr>
+                        <td>{{ item.category_name }}</td>
+                        <td>{{ item.subcategory_name }}</td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.date_created.strftime('%m/%d/%Y') if item.date_created else '' }}</td>
+                        <td>{{ item.date_updated.strftime('%m/%d/%Y') if item.date_updated else '' }}</td>
+                        {% set q_color = '#e74c3c' if item.quantity <= 5 else ('#f1c40f' if item.quantity <= 20 else 'var(--success)') %}
+                        <td style="color: {{ q_color }};">{{ item.quantity }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">No recent updates found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { display: false }, y: { display: false } }
+        };
+
+        function createGradient(ctx) {
+            let gradient = ctx.createLinearGradient(0, 0, 0, 150);
+            gradient.addColorStop(0, 'rgba(49, 68, 155, 0.4)');
+            gradient.addColorStop(1, 'rgba(49, 68, 155, 0.05)');
+            return gradient;
+        }
+
+        const emergencyCtx = document.getElementById('emergencyChart').getContext('2d');
+        new Chart(emergencyCtx, {
+            type: 'line',
+            data: {
+                labels: [1, 2, 3, 4, 5, 6, 7],
+                datasets: [{
+                    data: [10, 15, 45, 30, 70, 65, 80],
+                    borderColor: '#31449b',
+                    borderWidth: 3,
+                    fill: true,
+                    backgroundColor: createGradient(emergencyCtx),
+                    tension: 0.4
+                }]
+            },
+            options: commonOptions
+        });
+
+        const medicalCtx = document.getElementById('medicalChart').getContext('2d');
+        new Chart(medicalCtx, {
+            type: 'line',
+            data: {
+                labels: [1, 2, 3, 4, 5, 6, 7],
+                datasets: [{
+                    data: [20, 40, 30, 60, 50, 80, 75],
+                    borderColor: '#31449b',
+                    borderWidth: 3,
+                    fill: true,
+                    backgroundColor: createGradient(medicalCtx),
+                    tension: 0.4
+                }]
+            },
+            options: commonOptions
+        });
+
+        const veterinaryCtx = document.getElementById('veterinaryChart').getContext('2d');
+        new Chart(veterinaryCtx, {
+            type: 'line',
+            data: {
+                labels: [1, 2, 3, 4, 5, 6, 7],
+                datasets: [{
+                    data: [30, 20, 50, 40, 60, 55, 90],
+                    borderColor: '#31449b',
+                    borderWidth: 3,
+                    fill: true,
+                    backgroundColor: createGradient(veterinaryCtx),
+                    tension: 0.4
+                }]
+            },
+            options: commonOptions
+        });
+    });
+</script>
+{% endblock %}

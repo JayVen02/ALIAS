@@ -174,7 +174,6 @@
                 }
             } else {
                 const emptyRow = document.getElementById('emptyRow');
-                
                 if (emptyRow) emptyRow.remove();
                 const [newTr, newExpand] = buildRow(article, desc, propno, unit, unitval, propcard);
                 document.getElementById('auditTbody').append(newTr, newExpand);

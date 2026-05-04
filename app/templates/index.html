@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALIAS - Alubijid Local Inventory and Audit System</title>
+
+    <!-- Google Fonts (Don't touch this or else!)-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- styles.css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-placeholder">
+                    <img
+                        src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499758/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_qscnq2.png" />
+                </div>
+            </div>
+
+            <p class="menu-label">Menu</p>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active"><a href="/">Dashboard</a></li>
+                    <li><a href="/inventory">Inventory</a></li>
+                    <li><a href="/audit">Audit</a></li>
+                    <li><a href="/history">History</a></li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="profile-card">
+                    <div class="profile-icon">A</div>
+                    <div class="profile-info">
+                        <strong>ADMIN</strong>
+                        <button class="profile-btn" onclick="window.location.href='#'">View Profile ></button>
+                    </div>
+                </div>
+                <button class="logout-btn">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-titles">
+                    <h1>DASHBOARD</h1>
+                    <h2>Welcome, SLP GROUP!!</h2>
+                </div>
+                <div class="header-logo-right">
+                    <div class="logo-placeholder-right">
+                        <div>
+                            <img
+                                src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499758/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_qscnq2.png" />
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-wrapper">
+                <!-- Supply Trend Analysis -->
+                <section class="trend-analysis">
+                    <div class="section-title">
+                        <h2>SUPPLY TREND ANALYSIS</h2>
+                        <p>Emergency Supply, Medical Supply, Veterinary Supply</p>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="chart-badge">60</div>
+                            <canvas id="emergencyChart"></canvas>
+                            <h3>Emergency Supply</h3>
+                            <p>Inflow and Outflow 2025</p>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-badge">50</div>
+                            <canvas id="medicalChart"></canvas>
+                            <h3>Medical Supply</h3>
+                            <p>Inflow and Outflow 2025</p>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-badge">20</div>
+                            <canvas id="veterinaryChart"></canvas>
+                            <h3>Veterinary Supply</h3>
+                            <p>Inflow and Outflow 2025</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inventory Update History For testing only no backend -->
+                <section class="inventory-history">
+                    <h2>INVENTORY UPDATE HISTORY</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>CATEGORY</th>
+                                    <th>SUBCATEGORY</th>
+                                    <th>NAME</th>
+                                    <th>DATE CREATED</th>
+                                    <th>DATE UPDATED</th>
+                                    <th>QUANTITY</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>SUPPLY</td>
+                                    <td>EMERGENCY</td>
+                                    <td>COFFEE</td>
+                                    <td>01/01/2025</td>
+                                    <td>03/31/2025</td>
+                                    <td class="qty-red">2</td>
+                                </tr>
+                                <tr>
+                                    <td>SUPPLY</td>
+                                    <td>EMERGENCY</td>
+                                    <td>COFFEE</td>
+                                    <td>01/01/2025</td>
+                                    <td>03/31/2025</td>
+                                    <td class="qty-yellow">12</td>
+                                </tr>
+                                <tr>
+                                    <td>SUPPLY</td>
+                                    <td>EMERGENCY</td>
+                                    <td>COFFEE</td>
+                                    <td>01/01/2025</td>
+                                    <td>03/31/2025</td>
+                                    <td class="qty-green">24</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+
+</html>

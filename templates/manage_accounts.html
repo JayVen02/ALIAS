@@ -141,8 +141,14 @@
                     </div>
                 </div>
             </div>
-
-            
+            <!-- Confirm Password -->
+            <div>
+                <label class="form-label">CONFIRM PASSWORD <span style="color:var(--danger)">*</span></label>
+                <div style="position: relative;">
+                    <input type="password" id="c_confirm_password" placeholder="Re-enter password" class="modal-input" style="padding-right: 3rem;">
+                    <button type="button" onclick="togglePassword('c_confirm_password', this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--text-muted); font-size:0.8rem; font-weight:700;">SHOW</button>
+                </div>
+            </div>
             <!-- Role -->
             <div style="grid-column: span 2;">
                 <label class="form-label">ROLE <span style="color:var(--danger)">*</span></label>

@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header-container">
+    <div class="page-header-content">
+        <div class="page-header-title">
+            <h1>INVENTORY</h1>
+            <p class="welcome-msg">Welcome, <em>{{ session['full_name'] }}!</em></p>
+        </div>
+        <div class="header-logo-container">
+            <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1777188010/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_zc0nex.png" alt="ALIAS Header">
+        </div>
+    </div>
+</div>
+
+<div class="inventory-content" style="padding: 0 2rem 2rem;">
+    <!-- Top Toolbar -->
+    <div class="toolbar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <button class="btn-primary" id="btnCreateNew" style="padding: 0.6rem 2rem; border-radius: 20px;">Create New Item</button>
+        <div class="select-wrapper">
+            <select id="sortSelect">
+                <option value="latest">Sort By: Latest Update</option>
+                <option value="oldest">Sort By: Oldest Update</option>
+                <option value="name">Sort By: Name (A-Z)</option>
+                <option value="qty_high">Sort By: Quantity (High-Low)</option>
+                <option value="qty_low">Sort By: Quantity (Low-High)</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-wrapper">
+        <input type="text" id="searchInput" placeholder="Search for list">
+    </div>
+
+    <!-- Category & Subcategory Navigation -->
+    <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 2rem;">
+        <div class="select-wrapper" style="min-width: 200px;">
+            <select id="categorySelect">
+                <option value="">All Categories</option>
+            </select>
+        </div>
+        <div class="select-wrapper" style="min-width: 200px;">
+            <select id="subcategorySelect">
+                <option value="">All Subcategories</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="data-table-container">
+        <table class="data-table" id="inventoryTable">
+            <thead>
+                <tr>
+                    <th>CATEGORY</th>
+                    <th>SUBCATEGORY</th>
+                    <th>ITEM NAME</th>
+                    <th>DATE CREATED</th>
+                    <th>DATE UPDATED</th>
+                    <th>QUANTITY</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="inventoryBody">
+                <!-- Data loaded via inventory.js -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modals & Toasts -->
+<div id="createModal" class="modal hidden">
+    <div class="modal-content">
+        <h2 style="color: var(--primary-navy); margin-bottom: 1.5rem; text-align: center;">CREATE NEW ITEM</h2>
+        <div class="modal-form">
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <select id="createCategory" class="modal-input" style="flex: 2;"></select>
+                <select id="createSubcategory" class="modal-input" style="flex: 2;"></select>
+                <input type="number" id="createQuantity" placeholder="Qty" class="modal-input" style="flex: 1;">
+            </div>
+            <input type="text" id="createName" placeholder="Item Name" class="modal-input" style="width: 100%; margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: center; gap: 1rem;">
+                <button class="btn-back" id="createBack" style="background: var(--text-muted); color: white; padding: 0.8rem 2.5rem; border-radius: 25px;">BACK</button>
+                <button class="btn-save" id="createNext" style="background: var(--primary-navy); color: white; padding: 0.8rem 2.5rem; border-radius: 25px;">CREATE</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="deleteModal" class="modal hidden">
+    <div class="modal-content" style="max-width: 400px; text-align: center; padding: 2.5rem;">
+        <h2 style="color: #e74c3c; margin-bottom: 1rem; font-weight: 800;">Delete Item?</h2>
+        <p id="deleteMsg" style="margin-bottom: 2rem; color: var(--text-muted); font-weight: 600;"></p>
+        <div style="display: flex; justify-content: center; gap: 1rem;">
+            <button class="btn-primary" id="deleteCancelBtn" style="background: var(--text-muted); padding: 0.7rem 2rem; border-radius: 12px;">Cancel</button>
+            <button class="btn-primary" id="deleteConfirmBtn" style="background: #e74c3c; padding: 0.7rem 2rem; border-radius: 12px;">Delete</button>
+        </div>
+    </div>
+</div>
+
+<div id="successModal" class="modal hidden">
+    <div class="modal-content" style="max-width: 350px; text-align: center; padding: 2.5rem; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
+        <h2 id="successTitle" style="color: var(--primary-navy); margin-bottom: 2rem; font-size: 1.4rem; font-weight: 900; letter-spacing: 1px;">ITEM EDITED!</h2>
+        <button class="btn-primary" id="successContinueBtn" style="width: 100%; padding: 0.8rem; border-radius: 15px; background: #31449B; font-weight: 800; font-size: 0.9rem;">Continue</button>
+    </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+{# Toast styles live in main.css #}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/inventory.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.initInventory) window.initInventory();
+    });
+</script>
+{% endblock %}

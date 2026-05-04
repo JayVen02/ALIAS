@@ -1,0 +1,43 @@
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1777188010/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_zc0nex.png" alt="ALIAS Logo">
+    </div>
+
+    <p class="menu-label">Menu</p>
+    <nav class="sidebar-nav">
+        <ul>
+            <li class="nav-item {{ 'active' if request.path == '/' }}">
+                <a href="{{ url_for('pages.dashboard') }}">Dashboard</a>
+            </li>
+            <li class="nav-item {{ 'active' if request.path == '/inventory' }}">
+                <a href="{{ url_for('pages.inventory') }}">Inventory</a>
+            </li>
+            <li class="nav-item {{ 'active' if request.path.startswith('/audit') }}">
+                <a href="{{ url_for('pages.audit') }}">Audit</a>
+            </li>
+            <li class="nav-item {{ 'active' if request.path == '/history' }}">
+                <a href="{{ url_for('pages.history') }}">History</a>
+            </li>
+            {% if session.get('role') == 'admin' %}
+            <li class="nav-item {{ 'active' if request.path == '/manage-accounts' }}">
+                <a href="{{ url_for('pages.manage_accounts') }}">Manage Accounts</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="profile-card">
+            <div class="profile-logo-sm">
+                <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1773499759/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Logo_bpla9k.png" alt="ALIAS Logo">
+            </div>
+            <div class="profile-info">
+                <strong>{{ session.get('email', 'ADMIN').upper() }}</strong>
+                <a href="{{ url_for('pages.profile') }}" class="view-profile-link">View Profile &gt;</a>
+            </div>
+        </div>
+        <form method="POST" action="{{ url_for('auth.logout') }}" class="logout-form">
+            <button type="submit" class="logout-btn-large">Logout</button>
+        </form>
+    </div>
+</aside>

@@ -1,0 +1,499 @@
+/* ---------- Base Styles & Variables ---------- */
+:root {
+    --bg-color: #f8fbff;
+    --sidebar-bg: #ffffff;
+    --primary-blue: #31449b;
+    --text-main: #333333;
+    --text-muted: #888888;
+    --border-color: #eaeaea;
+    --active-bg: #f3f4f6;
+    --font-family: 'Inter', sans-serif;
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    display: flex;
+    min-height: 100vh;
+}
+
+.dashboard-container {
+    display: flex;
+    width: 100%;
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+    width: 260px;
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.sidebar-logo {
+    padding: 0 20px;
+    margin-bottom: 30px;
+}
+
+.logo-placeholder img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.menu-label {
+    padding: 0 20px;
+    color: var(--primary-blue);
+    font-size: 14px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+}
+
+.sidebar-nav a {
+    display: block;
+    padding: 12px 20px;
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-size: 15px;
+    transition: all 0.2s;
+}
+
+.nav-item.active a,
+.sidebar-nav a:hover {
+    background-color: var(--active-bg);
+    font-weight: 700;
+    color: #000;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.profile-card {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    border-radius: 20px;
+    gap: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.profile-logo-sm {
+    width: 40px;
+    height: 40px;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    padding: 5px;
+}
+
+.profile-logo-sm img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.profile-info strong {
+    color: var(--primary-blue);
+    font-size: 14px;
+    font-weight: 700;
+    display: block;
+}
+
+.view-profile-link {
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-size: 11px;
+    opacity: 0.7;
+    font-weight: 600;
+}
+
+.logout-btn-large {
+    width: 100%;
+    background-color: #2b3a8c;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(43, 58, 140, 0.3);
+}
+
+.logout-btn-large:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(43, 58, 140, 0.4);
+}
+
+/* ---------- Main Content Layout ---------- */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-header-gradient {
+    background: linear-gradient(135deg, #a5b4fc 0%, #ffffff 100%);
+    padding: 50px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    overflow: hidden;
+}
+
+.page-title-main {
+    font-size: 72px;
+    font-weight: 900;
+    color: #ffffff;
+    text-transform: uppercase;
+    line-height: 0.8;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 0 rgba(49, 68, 155, 0.1);
+}
+
+.welcome-text-sub {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary-blue);
+    font-style: italic;
+}
+
+.header-right-alias {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: var(--primary-blue);
+    text-align: right;
+}
+
+.alias-branding h3 {
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.header-logo-circle {
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header-logo-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* ---------- Inventory Toolbar & Category Pills ---------- */
+.inventory-toolbar {
+    padding: 0 40px;
+    margin-top: 30px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.btn-figma-primary {
+    background-color: #2b3a8c;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.search-box-figma {
+    flex: 1;
+    max-width: 400px;
+    background: #2b3a8c;
+    border-radius: 20px;
+    padding: 10px 20px;
+}
+
+.search-box-figma input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    outline: none;
+}
+
+.search-box-figma input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    font-style: italic;
+}
+
+.sort-box-figma {
+    background: #2b3a8c;
+    border-radius: 20px;
+    padding: 12px 25px;
+}
+
+.sort-box-figma select {
+    background: transparent;
+    border: none;
+    color: white;
+    font-weight: 700;
+    outline: none;
+    cursor: pointer;
+}
+
+.category-pill-bar {
+    padding: 0 40px;
+    margin-top: 25px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.pill-nav-btn {
+    background: #2b3a8c;
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.pill-active {
+    background: #2b3a8c;
+    color: white;
+    border: none;
+    padding: 10px 35px;
+    border-radius: 25px;
+    font-weight: 700;
+}
+
+/* ---------- Tables (Floating Row Style) ---------- */
+.inventory-table-wrapper {
+    padding: 20px 40px;
+}
+
+.inventory-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 12px;
+}
+
+.inventory-table th {
+    color: #b0b0b0;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 0 20px 10px;
+    text-align: left;
+}
+
+.inventory-table td {
+    background: white;
+    padding: 20px;
+    font-weight: 600;
+    color: #444;
+}
+
+.inventory-table tr td:first-child { border-radius: 20px 0 0 20px; }
+.inventory-table tr td:last-child { border-radius: 0 20px 20px 0; }
+
+.td-qty { font-size: 18px; font-weight: 800; }
+.qty-red { color: #ff6b6b; }
+.qty-yellow { color: #ffd43b; }
+.qty-green { color: #51cf66; }
+
+/* ---------- Audit Cards ---------- */
+.audit-report-grid {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.audit-report-card {
+    background: white;
+    border-radius: 25px;
+    padding: 35px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+    text-decoration: none;
+    color: var(--primary-blue);
+    font-size: 22px;
+    font-weight: 700;
+    transition: all 0.2s;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.audit-report-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+}
+
+/* ---------- Profile Page ---------- */
+.profile-content {
+    padding: 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.profile-tabs {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 40px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.profile-tab {
+    padding: 15px 0;
+    background: none;
+    border: none;
+    border-bottom: 4px solid transparent;
+    color: var(--text-muted);
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.profile-tab.active {
+    color: var(--primary-blue);
+    border-bottom-color: var(--primary-blue);
+}
+
+.profile-info-card {
+    background: white;
+    padding: 50px;
+    border-radius: 30px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.user-avatar-large {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #2b3a8c 0%, #4c6ef5 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    font-weight: 900;
+}
+
+.detail-group label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    letter-spacing: 1.5px;
+}
+
+.detail-group span {
+    font-size: 20px;
+    font-weight: 800;
+    color: #000;
+}
+
+.role-badge {
+    background: #e7f0ff;
+    color: var(--primary-blue);
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+/* ---------- Modals & Utilities ---------- */
+.hidden { display: none !important; }
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal-box {
+    background: white;
+    padding: 50px;
+    border-radius: 35px;
+    width: 90%;
+    max-width: 550px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+}
+
+.modal-title {
+    font-size: 28px;
+    font-weight: 900;
+    color: #2b3a8c;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+}
+
+.modal-btn {
+    padding: 12px 30px;
+    border-radius: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+.modal-btn.btn-primary { background: #2b3a8c; color: white; }
+.modal-btn.btn-danger { background: #ff4d4d; color: white; }
+
+/* Dashboard Specific (from previous turn) */
+.charts-grid { display: flex; gap: 30px; margin-top: 30px; }
+.chart-card { flex: 1; background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
