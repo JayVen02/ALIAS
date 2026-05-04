@@ -18,7 +18,11 @@ pages_bp = Blueprint("pages", __name__)
 @pages_bp.route("/")
 @login_required
 def dashboard():
+<<<<<<< HEAD
     recent_items = get_recent_items(mysql, limit=10)
+=======
+    recent_items = get_recent_items(mysql, limit=5)
+>>>>>>> 9fa0d723e2752acd617c4a3b19e0d774d0108fe0
     return render_template("index.html", recent_items=recent_items)
 
 
@@ -92,11 +96,20 @@ def history():
 
     cur = mysql.connection.cursor()
     cur.execute(
+<<<<<<< HEAD
         """SELECT l.*, COALESCE(u.full_name, u.email) AS officer_name, c.name AS category_name
+=======
+        """SELECT l.*, COALESCE(u.full_name, u.email) AS officer_name, 
+                  c.name AS category_name, i.name AS item_name, s.name AS subcategory_name
+>>>>>>> 9fa0d723e2752acd617c4a3b19e0d774d0108fe0
            FROM audit_logs l
            JOIN users u ON l.user_id = u.id
            LEFT JOIN inventory_items i ON l.item_id = i.id
            LEFT JOIN categories c ON i.category_id = c.id
+<<<<<<< HEAD
+=======
+           LEFT JOIN subcategories s ON i.subcategory_id = s.id
+>>>>>>> 9fa0d723e2752acd617c4a3b19e0d774d0108fe0
            ORDER BY l.created_at DESC
            LIMIT 50""",
     )

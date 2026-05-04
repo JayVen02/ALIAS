@@ -65,7 +65,11 @@
                         <th>NAME</th>
                         <th>DATE CREATED</th>
                         <th>DATE UPDATED</th>
+<<<<<<< HEAD
                         <th>QUANTITY</th>
+=======
+                        <th>STOCK NO.</th>
+>>>>>>> 9fa0d723e2752acd617c4a3b19e0d774d0108fe0
                     </tr>
                 </thead>
                 <tbody>
@@ -77,7 +81,11 @@
                         <td>{{ item.date_created.strftime('%m/%d/%Y') if item.date_created else '' }}</td>
                         <td>{{ item.date_updated.strftime('%m/%d/%Y') if item.date_updated else '' }}</td>
                         {% set q_color = '#e74c3c' if item.quantity <= 5 else ('#f1c40f' if item.quantity <= 20 else 'var(--success)') %}
+<<<<<<< HEAD
                         <td style="color: {{ q_color }};">{{ item.quantity }}</td>
+=======
+                        <td style="color: {{ q_color }};">{{ item.stock_number or 0 }}</td>
+>>>>>>> 9fa0d723e2752acd617c4a3b19e0d774d0108fe0
                     </tr>
                     {% else %}
                     <tr>

@@ -527,6 +527,10 @@ input::placeholder {
     outline: none;
     width: 100%;
     margin-bottom: 1rem;
+<<<<<<< HEAD
+=======
+    pointer-events: auto;
+>>>>>>> 9fa0d723e2752acd617c4a3b19e0d774d0108fe0
 }
 
 .modal-input:focus {
