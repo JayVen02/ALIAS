@@ -8,7 +8,6 @@ from routes.inventory import inventory_bp
 from routes.users import users_bp
 from routes.pdf import pdf_bp
 
-
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)

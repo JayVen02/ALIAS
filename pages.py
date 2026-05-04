@@ -1,5 +1,5 @@
-import datetime
 import os
+import datetime
 from flask import Blueprint, session, request, redirect, url_for, render_template, jsonify
 
 from extensions import mysql
@@ -39,53 +39,6 @@ def audit():
     categories = cur.fetchall()
     return render_template("audit.html", categories=categories)
 
-
-@pages_bp.route("/api/dashboard-chart-data")
-@login_required
-def dashboard_chart_data():
-    """Return monthly inventory quantity totals for ALL categories."""
-    current_year = datetime.datetime.now().year
-    month_labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT id, name FROM categories ORDER BY name ASC")
-    categories = cur.fetchall()
-
-    result = {}
-    current_month = datetime.datetime.now().month
-
-    for cat in categories:
-        cat_id = cat["id"]
-        cat_name = cat["name"]
-        safe_key = cat_name.lower().replace(" ", "_").replace("&", "and")
-
-        cur.execute(
-            """
-            SELECT MONTH(i.date_created) AS month,
-                   COALESCE(SUM(i.quantity), 0) AS total_qty
-            FROM inventory_items i
-            WHERE i.category_id = %s
-              AND YEAR(i.date_created) = %s
-            GROUP BY MONTH(i.date_created)
-            ORDER BY month
-            """,
-            (cat_id, current_year),
-        )
-        rows = cur.fetchall()
-        monthly = {int(row["month"]): int(row["total_qty"]) for row in rows}
-
-        full_year_data = [monthly.get(m, 0) for m in range(1, 13)]
-        result[safe_key] = {
-            "name": cat_name.title(),
-            "data": full_year_data[:current_month]
-        }
-
-    return jsonify({
-        "labels": month_labels[:current_month],
-        "datasets": result,
-        "year": current_year,
-    })
 
 @pages_bp.route("/audit/<category_name>")
 @login_required
@@ -162,6 +115,52 @@ def manage_accounts():
     staff_users = cur.fetchall()
     return render_template("manage_accounts.html", staff_users=staff_users)
 
+
+@pages_bp.route("/api/dashboard-chart-data")
+@login_required
+def dashboard_chart_data():
+    """Return monthly inventory quantity totals for the 3 dashboard chart categories."""
+    current_year = datetime.datetime.now().year
+    month_labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+    category_keys = {
+        "emergency": "EMERGENCY SUPPLIES",
+        "medical": "DRUGS & MEDICINES",
+        "veterinary": "VETERINARY SUPPLIES",
+    }
+
+    result = {}
+    cur = mysql.connection.cursor()
+
+    for key, cat_name in category_keys.items():
+        cur.execute(
+            """
+            SELECT MONTH(i.date_created) AS month,
+                   COALESCE(SUM(i.quantity), 0) AS total_qty
+            FROM inventory_items i
+            JOIN categories c ON i.category_id = c.id
+            WHERE c.name = %s
+              AND YEAR(i.date_created) = %s
+            GROUP BY MONTH(i.date_created)
+            ORDER BY month
+            """,
+            (cat_name, current_year),
+        )
+        rows = cur.fetchall()
+        # Your config uses DictCursor, so row["month"] works perfectly here
+        monthly = {int(row["month"]): int(row["total_qty"]) for row in rows}
+        result[key] = [monthly.get(m, 0) for m in range(1, 13)]
+
+    current_month = datetime.datetime.now().month
+
+    return jsonify({
+        "labels": month_labels[:current_month],
+        "emergency": result["emergency"][:current_month],
+        "medical": result["medical"][:current_month],
+        "veterinary": result["veterinary"][:current_month],
+        "year": current_year,
+    })
 
 @pages_bp.route("/profile", methods=["GET", "POST"])
 @login_required
