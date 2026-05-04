@@ -31,7 +31,7 @@
     const createNext = document.getElementById('createNext');
     const createCategory = document.getElementById('createCategory');
     const createSubcat = document.getElementById('createSubcategory');
-    const createQty = document.getElementById('createQuantity');
+    const createStockNumber = document.getElementById('createStockNumber');
     const createName = document.getElementById('createName');
     const deleteModal = document.getElementById('deleteModal');
     const deleteCancelBtn = document.getElementById('deleteCancelBtn');
@@ -155,7 +155,7 @@
         <td class="td-date">${escHtml(item.date_updated)}</td>
         <td>
           <div class="row-actions">
-            <span class="td-qty ${item.quantity < 10 ? 'qty-red' : (item.quantity < 30 ? 'qty-yellow' : 'qty-green')}">${item.quantity}</span>
+            <span class="td-qty ${item.quantity < 10 ? 'qty-red' : (item.quantity < 30 ? 'qty-yellow' : 'qty-green')}">${escHtml(item.stock_number || 0)}</span>
             <button class="btn-expand" title="Details">${chevron}</button>
             <div style="position:relative">
               <button class="btn-kebab" title="Options">&#8942;</button>
@@ -182,6 +182,7 @@
       const fields = [
         { label: 'ARTICLE', key: 'article' },
         { label: 'STOCK NUMBER', key: 'stock_number' },
+        { label: 'QUANTITY', key: 'quantity' },
         { label: 'UNIT OF MEASURE', key: 'unit_of_measure' },
         { label: 'UNIT VALUE', key: 'unit_value' },
         { label: 'BALANCE PER CARD (QUANTITY)', key: 'balance_per_card' },
@@ -197,7 +198,7 @@
             <div class="detail-field">
               <span class="df-label">${f.label}</span>
               <span class="df-line"></span>
-              <input class="df-input" data-key="${f.key}" value="${escHtml(String(val))}" />
+              <input class="df-input" data-key="${f.key}" value="${escHtml(String(val))}" ${f.key === 'quantity' ? 'readonly style="background: #f0f0f0; opacity: 0.7;"' : ''} />
             </div>`;
         }
         return `
@@ -234,6 +235,15 @@
       `;
 
       if (isEditing) {
+        const stockInp = tr.querySelector('.df-input[data-key="stock_number"]');
+        const qtyInp = tr.querySelector('.df-input[data-key="quantity"]');
+        if (stockInp && qtyInp) {
+          stockInp.addEventListener('input', () => {
+            const val = parseInt(stockInp.value) || 0;
+            qtyInp.value = val;
+          });
+        }
+
         tr.querySelector(`#saveBtn-${item.id}`).addEventListener('click', () => saveEdit(item.id, tr));
         tr.querySelector(`#cancelEditBtn-${item.id}`).addEventListener('click', () => {
           editingItemId = null;
@@ -354,118 +364,113 @@
       }
     });
 
-// ── Create New Item ───────────────────────────
-const createConfirmModal = document.getElementById('createConfirmModal');
-const createConfirmBtn = document.getElementById('createConfirmBtn');
-const createCancelBtn = document.getElementById('createCancelBtn');
+    // ── Create New Item ───────────────────────────
+    const createConfirmModal = document.getElementById('createConfirmModal');
+    const createConfirmBtn = document.getElementById('createConfirmBtn');
+    const createCancelBtn = document.getElementById('createCancelBtn');
 
 
-let pendingCreateData = null;
+    let pendingCreateData = null;
 
-btnCreateNew.addEventListener('click', () => {
-  populateCreateDropdowns();
-  createModal.classList.remove('hidden');
-});
-
-createBack.addEventListener('click', () => {
-  createModal.classList.add('hidden');
-});
-
-function populateCreateDropdowns() {
-  createCategory.innerHTML = '<option value="">Category</option>';
-  categories.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c.id;
-    opt.textContent = c.name;
-    createCategory.appendChild(opt);
-  });
-  createSubcat.innerHTML = '<option value="">Subcategory</option>';
-}
-
-createCategory.addEventListener('change', () => {
-  const catId = createCategory.value;
-  createSubcat.innerHTML = '<option value="">Subcategory</option>';
-  subcategories
-    .filter(s => s.category_id == catId)
-    .forEach(s => {
-      const opt = document.createElement('option');
-      opt.value = s.id;
-      opt.textContent = s.name;
-      createSubcat.appendChild(opt);
-    });
-});
-
-// STEP 1: CLICK CREATE → SHOW CONFIRM
-createNext.addEventListener('click', () => {
-  const catId = createCategory.value;
-  const subId = createSubcat.value;
-  const qty = parseInt(createQty.value) || 0;
-  const name = createName.value.trim();
-
-
-  if (!catId || !subId || !name) {
-    showToast('Please fill in Category, Subcategory, and Name.', 'error');
-    return;
-  }
-
-  if (qty <= 0) {
-    showToast('Quantity must be greater than 0.', 'error');
-    return;
-  }
-
-  pendingCreateData = {
-    category_id: catId,
-    subcategory_id: subId,
-    quantity: qty,
-    name
-  };
-
-  createConfirmModal.classList.remove('hidden');
-});
-
-// STEP 2: CONFIRM → CREATE ITEM
-createConfirmBtn.addEventListener('click', async () => {
-  if (!pendingCreateData) return;
-
-  createConfirmModal.classList.add('hidden');
-
-  try {
-    const newItem = await apiFetch('/api/inventory', {
-      method: 'POST',
-      body: JSON.stringify(pendingCreateData)
+    btnCreateNew.addEventListener('click', () => {
+      populateCreateDropdowns();
+      createModal.classList.remove('hidden');
     });
 
-    createModal.classList.add('hidden');
-    pendingCreateData = null;
+    createBack.addEventListener('click', () => {
+      createModal.classList.add('hidden');
+    });
 
-    createCategory.value = '';
-    createSubcat.innerHTML = '<option value="">Subcategory</option>';
-    createQty.value = '';
-    createName.value = '';
+    function populateCreateDropdowns() {
+      createCategory.innerHTML = '<option value="">Category</option>';
+      categories.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name;
+        createCategory.appendChild(opt);
+      });
+      createSubcat.innerHTML = '<option value="">Subcategory</option>';
+    }
 
-    await loadItems();
-    expandedItemId = newItem.id;
-    editingItemId = newItem.id;
-    renderTable();
+    createCategory.addEventListener('change', () => {
+      const catId = createCategory.value;
+      createSubcat.innerHTML = '<option value="">Subcategory</option>';
+      subcategories
+        .filter(s => s.category_id == catId)
+        .forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s.id;
+          opt.textContent = s.name;
+          createSubcat.appendChild(opt);
+        });
+    });
 
-    successTitle.textContent = 'ITEM CREATED!';
-    successModal.classList.remove('hidden');
-  } catch (e) {
-    showToast('Error: ' + e.message, 'error');
-  }
-});
+    // STEP 1: CLICK CREATE → SHOW CONFIRM
+    createNext.addEventListener('click', () => {
+      const catId = createCategory.value;
+      const subId = createSubcat.value;
+      const stockNo = createStockNumber.value.trim();
+      const name = createName.value.trim();
 
-// CANCEL CONFIRM
-createCancelBtn.addEventListener('click', () => {
-  createConfirmModal.classList.add('hidden');
-});
 
-// SUCCESS MODAL CONTINUE BUTTON
-if (successContBtn) {
-  successContBtn.onclick = () => {
-    successModal.classList.add('hidden');
-  };
-}
+      if (!catId || !subId || !name || !stockNo) {
+        showToast('Please fill in Category, Subcategory, Name, and Stock No.', 'error');
+        return;
+      }
+
+      pendingCreateData = {
+        category_id: catId,
+        subcategory_id: subId,
+        stock_number: stockNo,
+        name
+      };
+
+      createConfirmModal.classList.remove('hidden');
+    });
+
+    // STEP 2: CONFIRM → CREATE ITEM
+    createConfirmBtn.addEventListener('click', async () => {
+      if (!pendingCreateData) return;
+
+      createConfirmModal.classList.add('hidden');
+
+      try {
+        const newItem = await apiFetch('/api/inventory', {
+          method: 'POST',
+          body: JSON.stringify(pendingCreateData)
+        });
+
+        createModal.classList.add('hidden');
+        pendingCreateData = null;
+
+        createCategory.value = '';
+        createSubcat.innerHTML = '<option value="">Subcategory</option>';
+        createStockNumber.value = '';
+        createName.value = '';
+
+        await loadItems();
+        expandedItemId = newItem.id;
+        editingItemId = newItem.id;
+        renderTable();
+
+        successTitle.textContent = 'ITEM CREATED!';
+        successModal.classList.remove('hidden');
+      } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+      }
+    });
+
+    // CANCEL CONFIRM
+    createCancelBtn.addEventListener('click', () => {
+      createConfirmModal.classList.add('hidden');
+    });
+
+    // SUCCESS MODAL CONTINUE BUTTON
+    if (successContBtn) {
+      successContBtn.onclick = () => {
+        successModal.classList.add('hidden');
+      };
+    }
 
 
     // ── Search & Sort ─────────────────────────────

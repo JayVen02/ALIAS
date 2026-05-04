@@ -63,15 +63,16 @@ def api_create_item():
         return {"error": "Missing required fields."}, 400
 
     quantity = data.get("quantity", 0)
-
+    stock_number = data.get("stock_number")
 
     try:
         quantity = int(quantity)
     except (TypeError, ValueError):
-        return {"error": "Invalid quantity."}, 400
-
-    if quantity <= 0:
-        return {"error": "Quantity must be greater than 0."}, 400
+        # If quantity is not a valid int, try to parse from stock_number
+        try:
+            quantity = int(stock_number)
+        except (TypeError, ValueError):
+            quantity = 0
 
     new_id = create_item(
         mysql,
@@ -79,6 +80,7 @@ def api_create_item():
         subcategory_id,
         name,
         quantity,
+        stock_number
     )
 
     log_action(mysql, new_id, session.get("user_id"), "CREATE", new_value=str(data))
@@ -90,6 +92,14 @@ def api_create_item():
 @login_required
 def api_update_item(item_id):
     data = request.json or {}
+    
+    # If stock_number is being updated, sync quantity
+    if "stock_number" in data:
+        try:
+            data["quantity"] = int(data["stock_number"])
+        except (TypeError, ValueError):
+            pass
+
     updated = update_item(mysql, item_id, data)
     if not updated:
         return {"error": "No valid fields to update."}, 400
