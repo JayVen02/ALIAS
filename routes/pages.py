@@ -1,5 +1,6 @@
+import datetime
 import os
-from flask import Blueprint, session, request, redirect, url_for, render_template, flash
+from flask import Blueprint, session, request, redirect, url_for, render_template, flash, jsonify
 
 from extensions import mysql
 from routes.auth import login_required, admin_required
@@ -39,6 +40,53 @@ def audit():
     categories = cur.fetchall()
     return render_template("audit.html", categories=categories)
 
+
+@pages_bp.route("/api/dashboard-chart-data")
+@login_required
+def dashboard_chart_data():
+    """Return monthly inventory quantity totals for ALL categories."""
+    current_year = datetime.datetime.now().year
+    month_labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id, name FROM categories ORDER BY name ASC")
+    categories = cur.fetchall()
+
+    result = {}
+    current_month = datetime.datetime.now().month
+
+    for cat in categories:
+        cat_id = cat["id"]
+        cat_name = cat["name"]
+        safe_key = cat_name.lower().replace(" ", "_").replace("&", "and")
+
+        cur.execute(
+            """
+            SELECT MONTH(i.date_created) AS month,
+                   COALESCE(SUM(i.quantity), 0) AS total_qty
+            FROM inventory_items i
+            WHERE i.category_id = %s
+              AND YEAR(i.date_created) = %s
+            GROUP BY MONTH(i.date_created)
+            ORDER BY month
+            """,
+            (cat_id, current_year),
+        )
+        rows = cur.fetchall()
+        monthly = {int(row["month"]): int(row["total_qty"]) for row in rows}
+
+        full_year_data = [monthly.get(m, 0) for m in range(1, 13)]
+        result[safe_key] = {
+            "name": cat_name.title(),
+            "data": full_year_data[:current_month]
+        }
+
+    return jsonify({
+        "labels": month_labels[:current_month],
+        "datasets": result,
+        "year": current_year,
+    })
 
 @pages_bp.route("/audit/<category_name>")
 @login_required

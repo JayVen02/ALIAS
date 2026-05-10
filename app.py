@@ -31,7 +31,6 @@ def _is_rate_limited(ip: str, max_attempts: int, window_secs: int) -> bool:
         _login_attempts[ip].append(now)
         return False
 
-
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
