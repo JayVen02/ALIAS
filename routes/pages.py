@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, session, request, redirect, url_for, render_template
+from flask import Blueprint, session, request, redirect, url_for, render_template, flash
 
 from extensions import mysql
 from routes.auth import login_required, admin_required
@@ -137,19 +137,25 @@ def profile():
     email = session["email"]
 
     if request.method == "POST":
-        update_profile(
-            mysql,
-            email,
-            full_name = request.form.get("full_name"),
-            email     = request.form.get("email"),
-            age       = request.form.get("age"),
-            birthdate = request.form.get("birthdate"),
-            address   = request.form.get("address"),
-            contact   = request.form.get("contact"),
-            skills    = request.form.get("skills"),
-            work      = request.form.get("work"),
-        )
-        mysql.connection.commit()
+        try:
+            update_profile(
+                mysql,
+                email,
+                full_name = request.form.get("full_name"),
+                email     = request.form.get("email"),
+                age       = request.form.get("age"),
+                birthdate = request.form.get("birthdate"),
+                address   = request.form.get("address"),
+                contact   = request.form.get("contact"),
+                skills    = request.form.get("skills"),
+                work      = request.form.get("work"),
+            )
+            mysql.connection.commit()
+            flash("Profile updated successfully!")
+        except Exception as e:
+            mysql.connection.rollback()
+            flash(f"Error updating profile: {str(e)}")
+        
         return redirect(url_for("pages.profile"))
 
     user = get_user_by_email(mysql, email)
@@ -163,13 +169,37 @@ def upload_profile_pic():
     if not file or file.filename == "":
         return redirect(url_for("pages.profile"))
 
+    # ── Validate extension ────────────────────────────────────────────────────
+    ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
+    ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
+    if ext not in ALLOWED_EXTENSIONS:
+        flash("Invalid file type. Only PNG, JPG, GIF, WEBP images are allowed.")
+        return redirect(url_for("pages.profile"))
+
+    # ── Validate MIME type by reading the magic bytes (first 12 bytes) ────────
+    ALLOWED_MIME_SIGNATURES = {
+        b"\x89PNG",                           # PNG
+        b"\xff\xd8\xff",                      # JPEG/JPG
+        b"GIF87a", b"GIF89a",                 # GIF
+        b"RIFF",                              # WEBP (starts RIFF....WEBP)
+    }
+    header = file.read(12)
+    file.seek(0)  # reset stream after reading
+    mime_ok = any(header.startswith(sig) for sig in ALLOWED_MIME_SIGNATURES)
+    # Special WEBP check: RIFF????WEBP
+    if header.startswith(b"RIFF") and b"WEBP" not in header:
+        mime_ok = False
+    if not mime_ok:
+        flash("File content does not match a supported image type.")
+        return redirect(url_for("pages.profile"))
+
     email = session["email"]
     upload_dir = os.path.join("static", "uploads")
     os.makedirs(upload_dir, exist_ok=True)
 
-    # Sanitize filename for email
+    # Sanitize filename — derive from session email (no user-controlled path)
     safe_email = email.replace("@", "_").replace(".", "_")
-    filename = f"profile_{safe_email}.png"
+    filename = f"profile_{safe_email}.{ext}"
     filepath = os.path.join(upload_dir, filename)
     file.save(filepath)
 

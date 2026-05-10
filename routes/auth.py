@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import Blueprint, session, request, redirect, url_for, flash, render_template
 from extensions import mysql
-from services.user_service import get_user_by_login
+from services.user_service import get_user_by_login, hash_password, verify_password
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -43,10 +43,30 @@ def login():
         identifier = request.form.get("email", "").strip()
         password   = request.form.get("password", "")
 
+        # Basic server-side input validation
+        if not identifier or not password:
+            flash("Email and password are required.")
+            return redirect(url_for("auth.login"))
+
+        if len(identifier) > 254 or len(password) > 256:
+            flash("Invalid credentials.")
+            return redirect(url_for("auth.login"))
+
         user = get_user_by_login(mysql, identifier)
 
-        if user and user["password"] == password:
+        if user and verify_password(user["password"], password):
+            # ── Opportunistic re-hash of legacy plaintext passwords ──────────
+            stored = user["password"]
+            if not (stored.startswith("pbkdf2:") or stored.startswith("scrypt:")):
+                cur = mysql.connection.cursor()
+                cur.execute(
+                    "UPDATE users SET password=%s WHERE id=%s",
+                    (hash_password(password), user["id"]),
+                )
+                mysql.connection.commit()
+
             session.clear()
+            session.permanent = True          # honour PERMANENT_SESSION_LIFETIME
             session["logged_in"] = True
             session["email"]     = user.get("email", "")
             session["full_name"] = user.get("full_name") or user.get("email")
@@ -54,10 +74,8 @@ def login():
             session["role"]      = user.get("role", "staff")
             return redirect(url_for("pages.dashboard"))
 
-        if user:
-            flash("Incorrect password. Please try again.")
-        else:
-            flash("No account found with that email address.")
+        # Generic error — don't reveal whether email exists
+        flash("Invalid email or password.")
         return redirect(url_for("auth.login"))
 
     return render_template("login.html")
