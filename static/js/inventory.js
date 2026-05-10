@@ -319,15 +319,26 @@
       });
 
       try {
-        await apiFetch(`/api/inventory/${itemId}`, {
+        const res = await apiFetch(`/api/inventory/${itemId}`, {
           method: 'PUT',
           body: JSON.stringify(payload)
         });
         editingItemId = null;
         expandedItemId = null;
-        await loadItems();
 
-        successTitle.textContent = 'ITEM EDITED!';
+        if (res.pending) {
+          successTitle.textContent = 'EDIT REQUEST SUBMITTED!';
+          successModal.querySelector('p.pending-note') && successModal.querySelector('p.pending-note').remove();
+          const note = document.createElement('p');
+          note.className = 'pending-note';
+          note.style.cssText = 'color:#f39c12; font-size:0.82rem; font-weight:700; margin-bottom:1rem;';
+          note.textContent = 'Awaiting admin approval before changes appear.';
+          successModal.querySelector('.modal-content').insertBefore(note, successModal.querySelector('#successContinueBtn'));
+        } else {
+          successTitle.textContent = 'ITEM EDITED!';
+          successModal.querySelectorAll('.pending-note').forEach(el => el.remove());
+          await loadItems();
+        }
         successModal.classList.remove('hidden');
       } catch (e) {
         showToast('Error: ' + e.message, 'error');
@@ -351,13 +362,24 @@
       if (!deleteTargetId) return;
       deleteModal.classList.add('hidden');
       try {
-        await apiFetch(`/api/inventory/${deleteTargetId}`, { method: 'DELETE' });
+        const res = await apiFetch(`/api/inventory/${deleteTargetId}`, { method: 'DELETE', body: JSON.stringify({}) });
         expandedItemId = null;
         editingItemId = null;
         deleteTargetId = null;
-        await loadItems();
 
-        successTitle.textContent = 'ITEM DELETED!';
+        if (res.pending) {
+          successTitle.textContent = 'DELETE REQUEST SUBMITTED!';
+          successModal.querySelectorAll('.pending-note').forEach(el => el.remove());
+          const note = document.createElement('p');
+          note.className = 'pending-note';
+          note.style.cssText = 'color:#f39c12; font-size:0.82rem; font-weight:700; margin-bottom:1rem;';
+          note.textContent = 'Awaiting admin approval before item is removed.';
+          successModal.querySelector('.modal-content').insertBefore(note, successModal.querySelector('#successContinueBtn'));
+        } else {
+          successTitle.textContent = 'ITEM DELETED!';
+          successModal.querySelectorAll('.pending-note').forEach(el => el.remove());
+          await loadItems();
+        }
         successModal.classList.remove('hidden');
       } catch (e) {
         showToast('Error: ' + e.message, 'error');
@@ -435,7 +457,7 @@
       createConfirmModal.classList.add('hidden');
 
       try {
-        const newItem = await apiFetch('/api/inventory', {
+        const res = await apiFetch('/api/inventory', {
           method: 'POST',
           body: JSON.stringify(pendingCreateData)
         });
@@ -448,12 +470,22 @@
         createStockNumber.value = '';
         createName.value = '';
 
-        await loadItems();
-        expandedItemId = newItem.id;
-        editingItemId = newItem.id;
-        renderTable();
-
-        successTitle.textContent = 'ITEM CREATED!';
+        if (res.pending) {
+          successTitle.textContent = 'CREATE REQUEST SUBMITTED!';
+          successModal.querySelectorAll('.pending-note').forEach(el => el.remove());
+          const note = document.createElement('p');
+          note.className = 'pending-note';
+          note.style.cssText = 'color:#f39c12; font-size:0.82rem; font-weight:700; margin-bottom:1rem;';
+          note.textContent = 'Awaiting admin approval before the item appears in inventory.';
+          successModal.querySelector('.modal-content').insertBefore(note, successModal.querySelector('#successContinueBtn'));
+        } else {
+          successTitle.textContent = 'ITEM CREATED!';
+          successModal.querySelectorAll('.pending-note').forEach(el => el.remove());
+          await loadItems();
+          expandedItemId = res.id;
+          editingItemId  = res.id;
+          renderTable();
+        }
         successModal.classList.remove('hidden');
       } catch (e) {
         showToast('Error: ' + e.message, 'error');

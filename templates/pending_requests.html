@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header-container">
+    <div class="page-header-content">
+        <div class="page-header-title">
+            <h1>APPROVALS</h1>
+            <p class="welcome-msg">Review pending inventory changes, <em>{{ session['full_name'] }}!</em></p>
+        </div>
+        <div class="header-logo-container">
+            <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1777188010/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_zc0nex.png" alt="ALIAS Header">
+        </div>
+    </div>
+</div>
+
+<div style="padding: 0 2rem 2rem;">
+
+    <!-- Tabs -->
+    <div class="approval-tabs" id="approvalTabs">
+        <button class="appr-tab active" data-filter="pending">
+            Pending
+            {% if pending_count > 0 %}
+            <span class="appr-badge">{{ pending_count }}</span>
+            {% endif %}
+        </button>
+        <button class="appr-tab" data-filter="approved">Approved</button>
+        <button class="appr-tab" data-filter="rejected">Rejected</button>
+        <button class="appr-tab" data-filter="all">All</button>
+    </div>
+
+    <!-- Toast -->
+    <div id="apprToast" class="toast hidden"></div>
+
+    <!-- Table -->
+    <div class="data-table-container" style="margin-top: 1.5rem;">
+        <table class="data-table" id="approvalTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Requested By</th>
+                    <th>Action</th>
+                    <th>Item</th>
+                    <th>Change Details</th>
+                    <th>Reason</th>
+                    <th>Submitted</th>
+                    <th>Status</th>
+                    <th style="text-align:center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="approvalTbody">
+                {% for req in requests_list %}
+                <tr class="appr-row" data-status="{{ req.status }}">
+                    <td style="color:var(--text-muted); font-size:0.85rem; font-weight:700;">{{ loop.index }}</td>
+                    <td style="font-weight:700; color:var(--primary-navy);">{{ req.requester_name or '—' }}</td>
+                    <td>
+                        <span class="action-badge action-{{ req.action_type | lower }}">{{ req.action_type }}</span>
+                    </td>
+                    <td style="color:var(--text-muted); font-size:0.9rem;">
+                        {{ req.item_name or ('(new item)' if req.action_type == 'CREATE' else '—') }}
+                    </td>
+                    <td>
+                        <button class="btn-view-payload btn-primary"
+                                style="padding:0.3rem 0.9rem; border-radius:20px; font-size:0.75rem;"
+                                data-payload="{{ req.payload | e }}"
+                                data-action="{{ req.action_type }}">
+                            View Details
+                        </button>
+                    </td>
+                    <td style="color:var(--text-muted); font-size:0.85rem; max-width:180px; word-break:break-word;">
+                        {{ req.reason or '—' }}
+                    </td>
+                    <td style="color:var(--text-muted); font-size:0.8rem;">
+                        {{ req.created_at.strftime('%b %d, %Y %H:%M') if req.created_at else '—' }}
+                    </td>
+                    <td>
+                        <span class="status-badge status-{{ req.status }}">{{ req.status | upper }}</span>
+                    </td>
+                    <td style="text-align:center;">
+                        {% if req.status == 'pending' %}
+                        <div style="display:flex; gap:0.5rem; justify-content:center;">
+                            <button class="btn-primary btn-approve"
+                                    data-id="{{ req.id }}"
+                                    style="background:#27ae60; padding:0.4rem 1rem; border-radius:20px; font-size:0.75rem;">
+                                ✓ Approve
+                            </button>
+                            <button class="btn-primary btn-reject"
+                                    data-id="{{ req.id }}"
+                                    style="background:var(--danger); padding:0.4rem 1rem; border-radius:20px; font-size:0.75rem;">
+                                ✕ Reject
+                            </button>
+                        </div>
+                        {% elif req.status == 'approved' %}
+                        <span style="color:#27ae60; font-size:0.8rem; font-weight:700;">
+                            ✓ Approved{% if req.reviewer_name %} by {{ req.reviewer_name }}{% endif %}
+                        </span>
+                        {% elif req.status == 'rejected' %}
+                        <span style="color:var(--danger); font-size:0.8rem; font-weight:700;">
+                            ✕ Rejected{% if req.reviewer_name %} by {{ req.reviewer_name }}{% endif %}
+                        </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9" style="text-align:center; padding:3rem; color:var(--text-muted); font-weight:600;">
+                        No change requests found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ── Payload Detail Modal ── -->
+<div id="payloadModal" class="modal hidden">
+    <div class="modal-content" style="max-width:500px;">
+        <h2 style="color:var(--primary-navy); margin-bottom:1.5rem; text-align:center; font-size:1.2rem;">
+            Change Details
+        </h2>
+        <div id="payloadBody" style="background:#f8faff; border-radius:12px; padding:1.2rem; font-size:0.9rem; font-weight:600; color:var(--primary-navy); line-height:1.8; max-height:300px; overflow-y:auto; word-break:break-word;"></div>
+        <div style="text-align:center; margin-top:1.5rem;">
+            <button class="btn-primary" id="payloadClose" style="padding:0.7rem 2rem; border-radius:20px;">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Review Note Modal ── -->
+<div id="reviewModal" class="modal hidden">
+    <div class="modal-content" style="max-width:420px; text-align:center;">
+        <h2 id="reviewTitle" style="color:var(--primary-navy); margin-bottom:0.5rem; font-size:1.2rem;"></h2>
+        <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.2rem;">Optional: add a note for the requester.</p>
+        <textarea id="reviewNote" rows="3" placeholder="e.g. Duplicate entry, already in stock…"
+            style="width:100%; background:#f1f3f9; border:2px solid transparent; border-radius:12px; padding:0.8rem 1.2rem; font-size:0.9rem; font-weight:600; color:var(--primary-navy); outline:none; resize:vertical; margin-bottom:1.2rem;"></textarea>
+        <div style="display:flex; gap:1rem; justify-content:center;">
+            <button class="btn-primary" id="reviewCancel" style="background:var(--text-muted); padding:0.7rem 2rem; border-radius:20px;">Cancel</button>
+            <button class="btn-primary" id="reviewConfirm" style="padding:0.7rem 2rem; border-radius:20px;"></button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/approvals.js') }}"></script>
+{% endblock %}

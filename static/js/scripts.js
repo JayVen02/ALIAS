@@ -103,6 +103,27 @@
 
         // Initialize dashboard charts if on dashboard
         if (window.initDashboardCharts) window.initDashboardCharts();
+
+        // \u2500\u2500 Pending-approval badge (admin only) \u2500\u2500\u2500\u2500\u2500
+        const pendingBadge = document.getElementById('sidebarPendingBadge');
+        if (pendingBadge) {
+            async function refreshPendingCount() {
+                try {
+                    const res  = await fetch('/api/requests/count');
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    const n = data.count || 0;
+                    if (n > 0) {
+                        pendingBadge.textContent = n;
+                        pendingBadge.style.display = 'inline-flex';
+                    } else {
+                        pendingBadge.style.display = 'none';
+                    }
+                } catch (_) { /* ignore network errors */ }
+            }
+            refreshPendingCount();
+            setInterval(refreshPendingCount, 60000);
+        }
     });
 
 })();

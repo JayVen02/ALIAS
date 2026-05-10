@@ -5,6 +5,7 @@ from extensions import mysql
 from routes.auth import login_required, admin_required
 from services.audit_service import ensure_audit_log_table
 from services.inventory_service import get_recent_items
+from services.approval_service import ensure_requests_table, get_all_requests, count_pending
 from services.user_service import (
     get_user_by_email,
     get_all_users,
@@ -115,6 +116,19 @@ def manage_accounts():
     )
     staff_users = cur.fetchall()
     return render_template("manage_accounts.html", staff_users=staff_users)
+
+
+@pages_bp.route("/approvals")
+@admin_required
+def approvals():
+    ensure_requests_table(mysql)
+    requests_list = get_all_requests(mysql)
+    pending_count = count_pending(mysql)
+    return render_template(
+        "pending_requests.html",
+        requests_list=requests_list,
+        pending_count=pending_count,
+    )
 
 
 @pages_bp.route("/profile", methods=["GET", "POST"])

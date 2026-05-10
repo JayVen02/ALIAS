@@ -7,6 +7,7 @@ from routes.pages import pages_bp
 from routes.inventory import inventory_bp
 from routes.users import users_bp
 from routes.pdf import pdf_bp
+from routes.approvals import approvals_bp
 
 
 def create_app():
@@ -22,6 +23,7 @@ def create_app():
     app.register_blueprint(inventory_bp)
     app.register_blueprint(users_bp)
     app.register_blueprint(pdf_bp)
+    app.register_blueprint(approvals_bp)
 
     return app
 
