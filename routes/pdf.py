@@ -16,10 +16,10 @@ pdf_bp = Blueprint("pdf", __name__)
 def download_pdf(category_name):
     form = request.form
 
-    as_of_date        = form.get("as_of_date", datetime.date.today().strftime("%B %d, %Y"))
+    as_of_date = form.get("as_of_date", datetime.date.today().strftime("%B %d, %Y"))
     accountable_person = form.get("accountable_person", "")
-    position          = form.get("position", "")
-    department        = form.get("department", "")
+    position = form.get("position", "")
+    department = form.get("department", "")
 
     items = _collect_pdf_items_from_form(form)
 
@@ -38,31 +38,43 @@ def download_pdf(category_name):
 @pdf_bp.route("/api/generate_pdf_monthly")
 @login_required
 def generate_pdf_monthly():
-    category_name    = request.args.get("category")
+    category_name = request.args.get("category")
     subcategory_name = request.args.get("subcategory")
-    month  = int(request.args.get("month", datetime.date.today().month))
-    year   = int(request.args.get("year",  datetime.date.today().year))
-    day    = request.args.get("day")
+    month = int(request.args.get("month", datetime.date.today().month))
+    year = int(request.args.get("year", datetime.date.today().year))
+    day = request.args.get("day")
+    report_type = request.args.get("report_type", "semi-annual")
+    semester = request.args.get("semester", "1")
 
-    accountable_person = request.args.get("person",        "First Middle Last Name")
-    position           = request.args.get("position",      "Position Title")
-    department         = request.args.get("dept",          "Department Name")
-    certified_by       = request.args.get("certified",     "First Middle Last Name")
-    certified_role     = request.args.get("certified_role","Position Title")
-    approved_by        = request.args.get("approved",      "First Middle Last Name")
-    approved_role      = request.args.get("approved_role", "Position Title")
+    accountable_person = request.args.get("person", "First Middle Last Name")
+    position = request.args.get("position", "Position Title")
+    department = request.args.get("dept", "Department Name")
+    certified_by = request.args.get("certified", "First Middle Last Name")
+    certified_role = request.args.get("certified_role", "Position Title")
+    approved_by = request.args.get("approved", "First Middle Last Name")
+    approved_role = request.args.get("approved_role", "Position Title")
 
     cat, db_items = get_items_by_category_name(mysql, category_name)
     if cat is None:
         return "Category not found", 404
 
-    # Further filter by subcategory / date inside the service
-    db_items = _filter_items_by_date(category_name, subcategory_name, month, year, day)
+    db_items = _filter_items_by_date(category_name, subcategory_name, month, year, day, report_type, semester)
     if db_items is None:
         return "Category not found", 404
 
-    month_name = calendar.month_name[month]
-    as_of_date = f"{month_name} {day + ', ' if day else ''}{year}"
+    if report_type == "annual":
+        as_of_date = f"Annual Report for {year}"
+        filename_suffix = f"Annual_{year}"
+    elif report_type == "semi-annual":
+        # Changed 1st/2nd Semester to the requested month ranges
+        semester_name = "January-June" if str(semester) == "1" else "July-December"
+        as_of_date = f"{semester_name} {year}"
+        filename_suffix = f"SemiAnnual_{semester_name}_{year}"
+    else:
+        month_name = calendar.month_name[month]
+        as_of_date = f"{month_name} {day + ', ' if day else ''}{year}"
+        day_str = f"_{day}" if day else ""
+        filename_suffix = f"{month_name}{day_str}_{year}"
 
     pdf_items = [_map_db_item_to_pdf(it) for it in db_items]
 
@@ -79,36 +91,32 @@ def generate_pdf_monthly():
         approved_role=approved_role,
     )
 
-    day_str  = f"_{day}" if day else ""
-    filename = f"Audit_{category_name.replace(' ', '_')}{day_str}_{month_name}_{year}.pdf"
+    filename = f"Audit_{category_name.replace(' ', '_')}_{filename_suffix}.pdf"
     return _make_pdf_response(pdf_buffer, filename)
 
-
-# ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _collect_pdf_items_from_form(form):
     keys = ["pdf_article[]", "pdf_desc[]", "pdf_propno[]", "pdf_unit[]",
             "pdf_unitval[]", "pdf_qtycard[]", "pdf_qtyphys[]", "pdf_remarks[]"]
     lists = [form.getlist(k) for k in keys]
-    length = len(lists[0])
+    length = len(lists[0]) if lists[0] else 0
 
     return [
         {
-            "article":      lists[0][i] if i < len(lists[0]) else "",
-            "description":  lists[1][i] if i < len(lists[1]) else "",
-            "property_no":  lists[2][i] if i < len(lists[2]) else "",
+            "article": lists[0][i] if i < len(lists[0]) else "",
+            "description": lists[1][i] if i < len(lists[1]) else "",
+            "property_no": lists[2][i] if i < len(lists[2]) else "",
             "unit_measure": lists[3][i] if i < len(lists[3]) else "",
-            "unit_value":   lists[4][i] if i < len(lists[4]) else "",
-            "qty_card":     lists[5][i] if i < len(lists[5]) else "",
+            "unit_value": lists[4][i] if i < len(lists[4]) else "",
+            "qty_card": lists[5][i] if i < len(lists[5]) else "",
             "qty_physical": lists[6][i] if i < len(lists[6]) else "",
-            "remarks":      lists[7][i] if i < len(lists[7]) else "",
+            "remarks": lists[7][i] if i < len(lists[7]) else "",
         }
         for i in range(length)
     ]
 
 
-def _filter_items_by_date(category_name, subcategory_name, month, year, day):
-    """Run the date-filtered inventory query and return rows."""
+def _filter_items_by_date(category_name, subcategory_name, month, year, day, report_type='monthly', semester='1'):
     cur = mysql.connection.cursor()
     cur.execute("SELECT id FROM categories WHERE name = %s", (category_name,))
     cat = cur.fetchone()
@@ -128,24 +136,47 @@ def _filter_items_by_date(category_name, subcategory_name, month, year, day):
         query += " AND s.name = %s"
         params.append(subcategory_name)
 
-    if day:
+    if report_type == 'annual':
         query += """
             AND (
-                (DAY(i.date_created) = %s AND MONTH(i.date_created) = %s AND YEAR(i.date_created) = %s)
+                YEAR(i.date_created) = %s
                 OR
-                (DAY(i.date_updated) = %s AND MONTH(i.date_updated) = %s AND YEAR(i.date_updated) = %s)
+                YEAR(i.date_updated) = %s
             )
         """
-        params.extend([int(day), month, year, int(day), month, year])
+        params.extend([year, year])
+
+    elif report_type == 'semi-annual':
+        start_m, end_m = (1, 6) if str(semester) == "1" else (7, 12)
+
+        query += """
+            AND (
+                (MONTH(i.date_created) BETWEEN %s AND %s AND YEAR(i.date_created) = %s)
+                OR
+                (MONTH(i.date_updated) BETWEEN %s AND %s AND YEAR(i.date_updated) = %s)
+            )
+        """
+        params.extend([start_m, end_m, year, start_m, end_m, year])
+
     else:
-        query += """
-            AND (
-                (MONTH(i.date_created) = %s AND YEAR(i.date_created) = %s)
-                OR
-                (MONTH(i.date_updated) = %s AND YEAR(i.date_updated) = %s)
-            )
-        """
-        params.extend([month, year, month, year])
+        if day:
+            query += """
+                AND (
+                    (DAY(i.date_created) = %s AND MONTH(i.date_created) = %s AND YEAR(i.date_created) = %s)
+                    OR
+                    (DAY(i.date_updated) = %s AND MONTH(i.date_updated) = %s AND YEAR(i.date_updated) = %s)
+                )
+            """
+            params.extend([int(day), month, year, int(day), month, year])
+        else:
+            query += """
+                AND (
+                    (MONTH(i.date_created) = %s AND YEAR(i.date_created) = %s)
+                    OR
+                    (MONTH(i.date_updated) = %s AND YEAR(i.date_updated) = %s)
+                )
+            """
+            params.extend([month, year, month, year])
 
     cur.execute(query, tuple(params))
     return cur.fetchall()
@@ -153,14 +184,14 @@ def _filter_items_by_date(category_name, subcategory_name, month, year, day):
 
 def _map_db_item_to_pdf(item):
     return {
-        "article":      item["article"] or item["subcategory_name"],
-        "description":  item["name"],
-        "property_no":  item["stock_number"] or "",
+        "article": item["article"] or item["subcategory_name"],
+        "description": item["name"],
+        "property_no": item["stock_number"] or "",
         "unit_measure": item["unit_of_measure"] or "",
-        "unit_value":   item["unit_value"] or 0,
-        "qty_card":     item["quantity"],
+        "unit_value": item["unit_value"] or 0,
+        "qty_card": item["quantity"],
         "qty_physical": item["on_hand_per_count"] or 0,
-        "remarks":      item["remarks"] or "",
+        "remarks": item["remarks"] or "",
     }
 
 
