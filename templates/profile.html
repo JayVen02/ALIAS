@@ -102,11 +102,11 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div style="grid-column: span 2;">
                     <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-left: 5px;">FULL NAME</label>
-                    <input type="text" name="full_name" value="{{ user.full_name or '' }}" placeholder="Full Name" class="modal-input">
+                    <input type="text" name="full_name" value="{{ user.full_name or '' }}" placeholder="Full Name" class="modal-input" maxlength="50">
                 </div>
                 <div style="grid-column: span 2;">
                     <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-left: 5px;">EMAIL ADDRESS</label>
-                    <input type="email" name="email" value="{{ user.email or '' }}" placeholder="Email" class="modal-input">
+                    <input type="email" name="email" value="{{ user.email or '' }}" placeholder="Email" class="modal-input" maxlength="50">
                 </div>
                 <div>
                     <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-left: 5px;">AGE</label>
@@ -118,19 +118,19 @@
                 </div>
                 <div style="grid-column: span 2;">
                     <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-left: 5px;">CONTACT NUMBER</label>
-                    <input type="text" name="contact" value="{{ user.contact_number or '' }}" placeholder="Contact Number" class="modal-input">
+                    <input type="text" name="contact" value="{{ user.contact_number or '' }}" placeholder="Contact Number" class="modal-input" maxlength="20">
                 </div>
                 <div style="grid-column: span 2;">
                     <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-left: 5px;">ADDRESS</label>
-                    <textarea name="address" placeholder="Address" class="modal-input" rows="2">{{ user.address or '' }}</textarea>
+                    <textarea name="address" placeholder="Address" class="modal-input" rows="2" maxlength="50">{{ user.address or '' }}</textarea>
                 </div>
                 <div style="grid-column: span 1;">
                     <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-left: 5px;">SKILLS (Comma separated)</label>
-                    <textarea name="skills" placeholder="UI/UX, Branding, Python..." class="modal-input" rows="3">{{ user.skills or '' }}</textarea>
+                    <textarea name="skills" placeholder="UI/UX, Branding, Python..." class="modal-input" rows="3" maxlength="50">{{ user.skills or '' }}</textarea>
                 </div>
                 <div style="grid-column: span 1;">
                     <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-left: 5px;">WORK HISTORY</label>
-                    <textarea name="work" placeholder="Company Name - Role&#10;Dates..." class="modal-input" rows="3">{{ user.work_experience or '' }}</textarea>
+                    <textarea name="work" placeholder="Company Name - Role&#10;Dates..." class="modal-input" rows="3" maxlength="50">{{ user.work_experience or '' }}</textarea>
                 </div>
             </div>
             
@@ -149,5 +149,30 @@
     function closeEditModal() {
         document.getElementById('editProfileModal').classList.add('hidden');
     }
+    function closeErrorModal() {
+        document.getElementById('errorModal').classList.add('hidden');
+    }
+
+    // ── Input Limit Modal Alert ───────────────────────────────────────────
+    document.querySelectorAll('.modal-input').forEach(input => {
+        input.addEventListener('input', function() {
+            const max = parseInt(this.getAttribute('maxlength'));
+            if (max && this.value.length >= max) {
+                // Set modal text
+                const modal = document.getElementById('errorModal');
+                const title = modal.querySelector('h2');
+                const msg   = modal.querySelector('p');
+                
+                title.textContent = "LIMIT REACHED";
+                msg.textContent = "You have reached the maximum allowed length of " + max + " characters for this field.";
+                
+                // Show modal
+                modal.classList.remove('hidden');
+                
+                // Prevent further typing by blurring
+                this.blur();
+            }
+        });
+    });
 </script>
 {% endblock %}
