@@ -342,12 +342,57 @@
             </div>
         </header>
 
-        <div class="audit-body">
-            {% for cat in categories %}
-            <a href="{{ url_for('audit_form', category_name=cat.name) }}" class="audit-category-btn">
-                {{ cat.name }}
-            </a>
-            {% endfor %}
+        <div class="audit-body" style="padding: 30px 60px 60px; display: block;">
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="color: #31449b; font-size: 1.5rem; font-weight: 900; text-transform: uppercase;">
+                    {{ category_name }} INVENTORY REPORT
+                </h3>
+                <button onclick="window.print()" style="background: #31449b; color: white; padding: 0.8rem 2rem; border-radius: 25px; border: none; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; box-shadow: 0 4px 10px rgba(49,68,155,0.2);">
+                    🖨️ Print Report
+                </button>
+            </div>
+
+            <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #eaeaea;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead style="background: #f0f2fa; border-bottom: 2px solid #d0d7f0;">
+                        <tr>
+                            <th style="padding: 1.2rem 1.5rem; color: #31449b; font-size: 0.85rem; font-weight: 800; letter-spacing: 1px;">ARTICLE</th>
+                            <th style="padding: 1.2rem 1.5rem; color: #31449b; font-size: 0.85rem; font-weight: 800; letter-spacing: 1px;">ITEM DESCRIPTION</th>
+                            <th style="padding: 1.2rem 1.5rem; color: #31449b; font-size: 0.85rem; font-weight: 800; letter-spacing: 1px;">UNIT OF MEASURE</th>
+                            <th style="padding: 1.2rem 1.5rem; color: #31449b; font-size: 0.85rem; font-weight: 800; letter-spacing: 1px;">UNIT VALUE</th>
+                            <th style="padding: 1.2rem 1.5rem; color: #31449b; font-size: 0.85rem; font-weight: 800; letter-spacing: 1px;">QTY (BAL. PER CARD)</th>
+                            <th style="padding: 1.2rem 1.5rem; color: #31449b; font-size: 0.85rem; font-weight: 800; letter-spacing: 1px;">REMARKS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr style="border-bottom: 1px solid #f0f0f0; transition: background 0.2s;">
+                            <td style="padding: 1.2rem 1.5rem; font-size: 0.9rem; color: #555; font-weight: 600;">{{ item.article or '' }}</td>
+                            <td style="padding: 1.2rem 1.5rem; font-size: 0.9rem; color: #31449b; font-weight: 700;">{{ item.name }}</td>
+                            <td style="padding: 1.2rem 1.5rem; font-size: 0.9rem; color: #555;">{{ item.unit_of_measure or '' }}</td>
+                            <td style="padding: 1.2rem 1.5rem; font-size: 0.9rem; color: #555;">
+                                {% if item.unit_value %}₱{{ "{:,.2f}".format(item.unit_value) }}{% endif %}
+                            </td>
+                            <td style="padding: 1.2rem 1.5rem; font-size: 0.95rem; color: #31449b; font-weight: 800;">{{ item.quantity }}</td>
+                            <td style="padding: 1.2rem 1.5rem; font-size: 0.85rem; color: #777; font-style: italic;">{{ item.remarks or '' }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" style="padding: 3rem; text-align: center; color: #9aa5c0; font-weight: 600; font-size: 1.1rem;">
+                                No items found for this category.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 2rem; text-align: left;">
+                <a href="/audit" style="text-decoration: none; color: #31449b; font-weight: 700; font-size: 0.9rem;">
+                    &larr; Back to Categories
+                </a>
+            </div>
         </div>
 
     </div>

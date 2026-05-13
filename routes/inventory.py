@@ -62,21 +62,26 @@ def api_create_item():
 
     name = (data.get("name") or "").strip()
     category_id    = data.get("category_id")
+
     subcategory_id = data.get("subcategory_id")
 
-    if not name or not category_id or not subcategory_id:
-        return {"error": "Missing required fields."}, 400
+    if not name or not category_id:
+        return {"error": "Missing required fields (Category and Name)."}, 400
 
-    quantity     = data.get("quantity", 0)
-    stock_number = data.get("stock_number")
+    quantity        = data.get("quantity", 0)
+    stock_number    = data.get("stock_number")
+    article         = data.get("article")
+    unit_of_measure = data.get("unit_of_measure")
+    unit_value      = data.get("unit_value")
+    remarks         = data.get("remarks")
+    on_hand_per_count = data.get("on_hand_per_count")
+    shortage_quantity = data.get("shortage_quantity")
+    overage_value = data.get("overage_value")
 
     try:
         quantity = int(quantity)
     except (TypeError, ValueError):
-        try:
-            quantity = int(stock_number)
-        except (TypeError, ValueError):
-            quantity = 0
+        quantity = 0
 
     # ── Non-admin: submit for approval ──
     if not _is_admin():
@@ -88,6 +93,10 @@ def api_create_item():
             "subcategory_id": subcategory_id,
             "quantity": quantity,
             "stock_number": stock_number,
+            "article": article,
+            "unit_of_measure": unit_of_measure,
+            "unit_value": unit_value,
+            "remarks": remarks
         }
         req_id = submit_request(
             mysql,
@@ -111,6 +120,13 @@ def api_create_item():
         name,
         quantity,
         stock_number,
+        article,
+        unit_of_measure,
+        unit_value,
+        remarks,
+        on_hand_per_count,
+        shortage_quantity,
+        overage_value
     )
     log_action(mysql, new_id, session.get("user_id"), "CREATE", new_value=str(data))
     mysql.connection.commit()

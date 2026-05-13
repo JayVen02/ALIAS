@@ -116,16 +116,15 @@ def _filter_items_by_date(category_name, subcategory_name, month, year, day):
         return None
 
     query = """
-        SELECT i.*, c.name AS category_name, s.name AS subcategory_name
+        SELECT i.*, c.name AS category_name
         FROM inventory_items i
         JOIN categories c ON i.category_id = c.id
-        JOIN subcategories s ON i.subcategory_id = s.id
         WHERE i.category_id = %s
     """
     params = [cat["id"]]
 
     if subcategory_name:
-        query += " AND s.name = %s"
+        query += " AND i.article = %s"
         params.append(subcategory_name)
 
     if day:
@@ -153,7 +152,7 @@ def _filter_items_by_date(category_name, subcategory_name, month, year, day):
 
 def _map_db_item_to_pdf(item):
     return {
-        "article":      item["article"] or item["subcategory_name"],
+        "article":      item["article"] or "",
         "description":  item["name"],
         "property_no":  item["stock_number"] or "",
         "unit_measure": item["unit_of_measure"] or "",

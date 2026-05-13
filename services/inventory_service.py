@@ -7,10 +7,9 @@ SORT_MAP = {
 }
 
 ITEM_SELECT = """
-    SELECT i.*, c.name AS category_name, s.name AS subcategory_name
+    SELECT i.*, c.name AS category_name
     FROM inventory_items i
     JOIN categories c ON i.category_id = c.id
-    JOIN subcategories s ON i.subcategory_id = s.id
 """
 
 # ── Read ──────────────────────────────────────────────────────────────────────
@@ -72,11 +71,22 @@ def get_items_by_category_name(db, category_name):
 
 # ── Write ─────────────────────────────────────────────────────────────────────
 
-def create_item(db, category_id, subcategory_id, name, quantity, stock_number=None):
+def create_item(db, category_id, subcategory_id, name, quantity, stock_number=None, article=None, unit_of_measure=None,
+                unit_value=None, remarks=None, on_hand_per_count=None, shortage_quantity=None, overage_value=None):
     cur = db.connection.cursor()
+
+    # Handle empty strings for decimal/integer fields to avoid MySQL errors
+    if unit_value == "": unit_value = None
+    if on_hand_per_count == "": on_hand_per_count = None
+    if shortage_quantity == "": shortage_quantity = None
+    if overage_value == "": overage_value = None
+
     cur.execute(
-        "INSERT INTO inventory_items (category_id, subcategory_id, name, quantity, stock_number) VALUES (%s, %s, %s, %s, %s)",
-        (category_id, subcategory_id, name, quantity, stock_number),
+        """INSERT INTO inventory_items 
+           (category_id, subcategory_id, name, quantity, stock_number, article, unit_of_measure, unit_value, remarks, on_hand_per_count, shortage_quantity, overage_value) 
+           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+        (category_id, subcategory_id, name, quantity, stock_number, article, unit_of_measure, unit_value, remarks,
+         on_hand_per_count, shortage_quantity, overage_value),
     )
     return cur.lastrowid
 

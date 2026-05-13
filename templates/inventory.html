@@ -66,20 +66,39 @@
         </table>
     </div>
 </div>
-<!-- Modals & Toasts -->
 <div id="createModal" class="modal hidden">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 680px;">
         <h2 style="color: var(--primary-navy); margin-bottom: 1.5rem; text-align: center;">CREATE NEW ITEM</h2>
         <div class="modal-form">
             <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                <select id="createCategory" class="modal-input" style="flex: 2;"></select>
-                <select id="createSubcategory" class="modal-input" style="flex: 2;"></select>
-                <input type="text" id="createStockNumber" placeholder="Stock No." class="modal-input" style="flex: 1;">
+                <select id="createCategory" class="modal-input" style="flex: 1; width: 100%;"></select>
             </div>
-            <input type="text" id="createName" placeholder="Item Name" class="modal-input" style="width: 100%; margin-bottom: 1.5rem;">
+
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <input type="text" id="createArticle" placeholder="Article" class="modal-input" style="flex: 1;">
+                <input type="text" id="createName" placeholder="Item Name / Description" class="modal-input" style="flex: 2;">
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <input type="text" id="createStockNumber" placeholder="Property No." class="modal-input" style="flex: 1;">
+                <input type="text" id="createUOM" placeholder="Unit of Measure" class="modal-input" style="flex: 1;">
+                <input type="number" step="0.01" id="createUnitValue" placeholder="Unit Value" class="modal-input" style="flex: 1;">
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <input type="number" id="createQuantity" placeholder="Qty (Balance per Card)" class="modal-input" style="flex: 1;">
+                <input type="number" id="createOnHand" placeholder="On Hand Per Count" class="modal-input" style="flex: 1;">
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                <input type="number" id="createShortage" placeholder="Shortage (Qty)" class="modal-input" style="flex: 1;">
+                <input type="number" step="0.01" id="createOverage" placeholder="Overage (Value)" class="modal-input" style="flex: 1;">
+                <input type="text" id="createRemarks" placeholder="Remarks" class="modal-input" style="flex: 2;">
+            </div>
+
             <div style="display: flex; justify-content: center; gap: 1rem;">
-                <button class="btn-back" id="createBack" style="background: var(--text-muted); color: white; padding: 0.8rem 2.5rem; border-radius: 25px;">BACK</button>
-                <button class="btn-save" id="createNext" style="background: var(--primary-navy); color: white; padding: 0.8rem 2.5rem; border-radius: 25px;">CREATE</button>
+                <button class="btn-back" id="createBack" style="background: var(--text-muted); color: white; padding: 0.8rem 2.5rem; border-radius: 25px; border: none; cursor: pointer;">BACK</button>
+                <button class="btn-save" id="createNext" style="background: var(--primary-navy); color: white; padding: 0.8rem 2.5rem; border-radius: 25px; border: none; cursor: pointer;">CREATE</button>
             </div>
         </div>
     </div>

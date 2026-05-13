@@ -19,7 +19,7 @@
     let editingItemId = null;
     let deleteTargetId = null;
 
-    // ── DOM refs ─────────────────────────────────
+// ── DOM refs ─────────────────────────────────
     const categorySelect = document.getElementById('categorySelect');
     const subcategorySelect = document.getElementById('subcategorySelect');
     const tableBody = document.getElementById('inventoryBody');
@@ -29,10 +29,21 @@
     const createModal = document.getElementById('createModal');
     const createBack = document.getElementById('createBack');
     const createNext = document.getElementById('createNext');
+
+    // Form Inputs (Cleaned up, no duplicates!)
     const createCategory = document.getElementById('createCategory');
-    const createSubcat = document.getElementById('createSubcategory');
-    const createStockNumber = document.getElementById('createStockNumber');
+    const createArticle = document.getElementById('createArticle');
     const createName = document.getElementById('createName');
+    const createStockNumber = document.getElementById('createStockNumber');
+    const createUOM = document.getElementById('createUOM');
+    const createUnitValue = document.getElementById('createUnitValue');
+    const createQuantity = document.getElementById('createQuantity');
+    const createOnHand = document.getElementById('createOnHand');
+    const createShortage = document.getElementById('createShortage');
+    const createOverage = document.getElementById('createOverage');
+    const createRemarks = document.getElementById('createRemarks');
+
+    // Modals & Buttons
     const deleteModal = document.getElementById('deleteModal');
     const deleteCancelBtn = document.getElementById('deleteCancelBtn');
     const deleteConfirmBtn = document.getElementById('deleteConfirmBtn');
@@ -149,7 +160,7 @@
 
       tr.innerHTML = `
         <td class="td-category">${escHtml(item.category_name)}</td>
-        <td class="td-subcategory">${escHtml(item.subcategory_name)}</td>
+        <td class="td-subcategory">${escHtml(item.article || '')}</td>
         <td class="td-name">${escHtml(item.name)}</td>
         <td class="td-date">${escHtml(item.date_created)}</td>
         <td class="td-date">${escHtml(item.date_updated)}</td>
@@ -387,11 +398,6 @@
     });
 
     // ── Create New Item ───────────────────────────
-    const createConfirmModal = document.getElementById('createConfirmModal');
-    const createConfirmBtn = document.getElementById('createConfirmBtn');
-    const createCancelBtn = document.getElementById('createCancelBtn');
-
-
     let pendingCreateData = null;
 
     btnCreateNew.addEventListener('click', () => {
@@ -411,40 +417,43 @@
         opt.textContent = c.name;
         createCategory.appendChild(opt);
       });
-      createSubcat.innerHTML = '<option value="">Subcategory</option>';
+      // (Subcategory logic has been completely removed from here)
     }
-
-    createCategory.addEventListener('change', () => {
-      const catId = createCategory.value;
-      createSubcat.innerHTML = '<option value="">Subcategory</option>';
-      subcategories
-        .filter(s => s.category_id == catId)
-        .forEach(s => {
-          const opt = document.createElement('option');
-          opt.value = s.id;
-          opt.textContent = s.name;
-          createSubcat.appendChild(opt);
-        });
-    });
 
     // STEP 1: CLICK CREATE → SHOW CONFIRM
     createNext.addEventListener('click', () => {
       const catId = createCategory.value;
-      const subId = createSubcat.value;
-      const stockNo = createStockNumber.value.trim();
+      const article = createArticle.value.trim();
       const name = createName.value.trim();
+      const stockNo = createStockNumber.value.trim();
+      const uom = createUOM.value.trim();
+      const unitValue = createUnitValue.value.trim();
+      const quantity = createQuantity.value.trim();
 
+      // NEW FIELDS
+      const onHand = createOnHand.value.trim();
+      const shortage = createShortage.value.trim();
+      const overage = createOverage.value.trim();
+      const remarks = createRemarks.value.trim();
 
-      if (!catId || !subId || !name || !stockNo) {
-        showToast('Please fill in Category, Subcategory, Name, and Stock No.', 'error');
+      if (!catId || !name || !stockNo) {
+        showToast('Please fill in Category, Name, and Property No.', 'error');
         return;
       }
 
       pendingCreateData = {
         category_id: catId,
-        subcategory_id: subId,
+        subcategory_id: null,
+        article: article,
+        name: name,
         stock_number: stockNo,
-        name
+        unit_of_measure: uom,
+        unit_value: unitValue,
+        quantity: quantity,
+        on_hand_per_count: onHand,
+        shortage_quantity: shortage,
+        overage_value: overage,
+        remarks: remarks
       };
 
       createConfirmModal.classList.remove('hidden');
@@ -465,10 +474,18 @@
         createModal.classList.add('hidden');
         pendingCreateData = null;
 
+        // CLEAR ALL INPUTS
         createCategory.value = '';
-        createSubcat.innerHTML = '<option value="">Subcategory</option>';
-        createStockNumber.value = '';
+        createArticle.value = '';
         createName.value = '';
+        createStockNumber.value = '';
+        createUOM.value = '';
+        createUnitValue.value = '';
+        createQuantity.value = '';
+        createOnHand.value = '';
+        createShortage.value = '';
+        createOverage.value = '';
+        createRemarks.value = '';
 
         if (res.pending) {
           successTitle.textContent = 'CREATE REQUEST SUBMITTED!';

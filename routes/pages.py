@@ -98,17 +98,15 @@ def audit_form(category_name):
     filtered_items = []
     if cat:
         cur.execute(
-            """SELECT i.*, c.name AS category_name, s.name AS subcategory_name
+            """SELECT i.*, c.name AS category_name
                FROM inventory_items i
                JOIN categories c ON i.category_id = c.id
-               JOIN subcategories s ON i.subcategory_id = s.id
                WHERE i.category_id = %s""",
             (cat["id"],),
         )
         filtered_items = cur.fetchall()
 
     return render_template("audit_form.html", category_name=category_name, items=filtered_items)
-
 
 @pages_bp.route("/audit/history/<category_name>")
 @login_required
@@ -118,14 +116,13 @@ def audit_category_history(category_name):
         """SELECT
                DATE(l.created_at) AS audit_date,
                c.name AS category_name,
-               s.name AS subcategory_name,
+               COALESCE(i.article, 'No Article') AS article_name,
                COUNT(*) AS activity_count
            FROM audit_logs l
            JOIN inventory_items i ON l.item_id = i.id
            JOIN categories c ON i.category_id = c.id
-           JOIN subcategories s ON i.subcategory_id = s.id
            WHERE c.name = %s
-           GROUP BY audit_date, category_name, subcategory_name
+           GROUP BY audit_date, category_name, article_name
            ORDER BY audit_date DESC
            LIMIT 50""",
         (category_name,),
