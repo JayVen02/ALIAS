@@ -10,7 +10,12 @@ from services.inventory_service import (
     update_item,
     delete_item,
     serialize_item,
+    create_category,
+    update_category,
+    delete_category,
+    delete_subcategory,
 )
+
 
 inventory_bp = Blueprint("inventory", __name__, url_prefix="/api")
 
@@ -115,3 +120,58 @@ def api_delete_item(item_id):
     delete_item(mysql, item_id)
     mysql.connection.commit()
     return {"message": "Deleted"}
+
+
+#Category management_admin only
+
+@inventory_bp.route("/categories", methods=["POST"])
+@admin_required
+def api_create_category():
+    data = request.json or {}
+    name = (data.get("name") or "").strip()
+    if not name:
+        return {"error": "Category name is required."}, 400
+    try:
+        new_id = create_category(mysql, name)
+        mysql.connection.commit()
+        return {"id": new_id, "name": name.upper()}, 201
+    except Exception as exc:
+        return {"error": str(exc)}, 500
+
+@inventory_bp.route("/categories/<int:category_id>", methods=["PUT"])
+@admin_required
+def api_update_category(category_id):
+    data = request.json or {}
+    name = (data.get("name") or "").strip()
+    if not name:
+        return {"error": "Category name is required."}, 400
+    try:
+        updated = update_category(mysql, category_id, name)
+        if not updated:
+            return {"error": "Category not found."}, 404
+        mysql.connection.commit()
+        return {"message": "Category updated"}
+    except Exception as exc:
+        return {"error": str(exc)}, 500
+
+@inventory_bp.route("/categories/<int:category_id>", methods=["DELETE"])
+@admin_required
+def api_delete_category(category_id):
+    try:
+        delete_category(mysql, category_id)
+        mysql.connection.commit()
+        return {"message": "Category deleted"}
+    except Exception as exc:
+        return {"error": str(exc)}, 500
+
+#Subcategory management_admin only
+
+@inventory_bp.route("/subcategories/<int:subcategory_id>", methods=["DELETE"])
+@admin_required
+def api_delete_subcategory(subcategory_id):
+    try:
+        delete_subcategory(mysql, subcategory_id)
+        mysql.connection.commit()
+        return {"message": "Subcategory deleted"}
+    except Exception as exc:
+        return {"error": str(exc)}, 500

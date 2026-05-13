@@ -119,3 +119,25 @@ def serialize_item(item):
     if result.get("overage_value") is not None:
         result["overage_value"] = float(result["overage_value"])
     return result
+
+#Category CRUD_admin only 
+
+def create_category(db, name):
+    cur = db.connection.cursor()
+    cur.execute("INSERT INTO categories (name) VALUES (%s)", (name.strip().upper(),))
+    return cur.lastrowid
+
+def update_category(db, category_id, name):
+    cur = db.connection.cursor()
+    cur.execute("UPDATE categories SET name = %s WHERE id = %s", (name.strip().upper(), category_id))
+    return cur.rowcount > 0
+
+def delete_category(db, category_id):
+    cur = db.connection.cursor()
+    cur.execute("DELETE FROM categories WHERE id = %s", (category_id,))
+
+#Subcat CRUD_admin only
+
+def delete_subcategory(db, subcategory_id):
+    cur = db.connection.cursor()
+    cur.execute("DELETE FROM subcategories WHERE id = %s", (subcategory_id,))

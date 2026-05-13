@@ -109,6 +109,9 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+  const IS_ADMIN = {{ 'true' if session.get('role') == 'admin' else 'false' }};
+</script>
 <script src="{{ url_for('static', filename='js/inventory.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {

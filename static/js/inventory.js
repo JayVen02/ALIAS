@@ -515,3 +515,55 @@
   };
 
 })();
+
+
+// ADMIN ONLY Category & Subcategory Management 
+function renderSubcategoryOption(sub) {
+  const wrapper = document.createElement('div');
+  wrapper.style.display = 'flex';
+  wrapper.style.alignItems = 'center';
+
+  const opt = document.createElement('option');
+  opt.value = sub.id;
+  opt.textContent = sub.name;
+  wrapper.appendChild(opt);
+
+  if (IS_ADMIN) {
+    const btn = document.createElement('button');
+    btn.textContent = '✕';
+    btn.title = 'Delete subcategory';
+    btn.onclick = () => deleteSubcategory(sub.id, sub.name);
+    wrapper.appendChild(btn);
+  }
+  return wrapper;
+}
+
+async function deleteSubcategory(id, name) {
+  if (!confirm(`Delete subcategory "${name}"? Items using it will also be affected.`)) return;
+  const res = await fetch(`/api/subcategories/${id}`, { method: 'DELETE' });
+  const data = await res.json();
+  if (res.ok) { showToast('Subcategory deleted', 'success'); location.reload(); }
+  else showToast(data.error || 'Failed', 'error');
+}
+
+async function createCategory(name) {
+  const res = await fetch('/api/categories', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name })
+  });
+  const data = await res.json();
+  if (res.ok) { showToast('Category created', 'success'); location.reload(); }
+  else showToast(data.error || 'Failed', 'error');
+}
+
+async function updateCategory(id, newName) {
+  const res = await fetch(`/api/categories/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: newName })
+  });
+  const data = await res.json();
+  if (res.ok) { showToast('Category updated', 'success'); location.reload(); }
+  else showToast(data.error || 'Failed', 'error');
+}
