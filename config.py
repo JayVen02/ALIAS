@@ -7,10 +7,10 @@ load_dotenv()
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "change-me-in-production")
 
-    MYSQL_HOST = os.getenv("localhost")
-    MYSQL_USER = os.getenv("root")
-    MYSQL_PASSWORD = os.getenv("")
-    MYSQL_DB = os.getenv("alias_db")
+    MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
+    MYSQL_USER = os.getenv("MYSQL_USER", "root")
+    MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "")
+    MYSQL_DB = os.getenv("MYSQL_DB", "alias_db")
     MYSQL_CURSORCLASS = "DictCursor"
 
     UPLOAD_FOLDER = os.path.join("static", "uploads")

@@ -25,6 +25,11 @@
                 <option value="qty_high">Sort By: Quantity (High-Low)</option>
                 <option value="qty_low">Sort By: Quantity (Low-High)</option>
             </select>
+            {% if session.get('role') == 'admin' %}
+    <button class="btn-primary" id="btnManageCategories" style="padding: 0.6rem 2rem; border-radius: 20px; background: #555;">
+        Manage Categories
+    </button>
+    {% endif %}
         </div>
     </div>
 
@@ -134,6 +139,25 @@
       <button id="createConfirmBtn" class="btn-primary" style="background: #31449B; padding: 0.7rem 2rem; border-radius: 12px;">
         Confirm
       </button>
+    </div>
+  </div>
+</div>
+
+<div id="manageCatModal" class="modal hidden">
+  <div class="modal-content" style="max-width: 500px; padding: 2rem;">
+    <h2 style="color: var(--primary-navy); margin-bottom: 1.5rem; text-align: center;">MANAGE CATEGORIES</h2>
+
+    <!-- Add new cat -->
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+      <input type="text" id="newCategoryName" placeholder="New category name" class="modal-input" style="flex: 1;">
+      <button class="btn-save" id="btnAddCategory" style="padding: 0.6rem 1.2rem; border-radius: 12px; background: #31449B; color: white;">Add</button>
+    </div>
+
+    <!-- List with edit/delete -->
+    <div id="categoryList" style="max-height: 300px; overflow-y: auto;"></div>
+
+    <div style="text-align: center; margin-top: 1.5rem;">
+      <button class="btn-back" id="manageCatClose" style="padding: 0.7rem 2rem; border-radius: 12px; background: var(--text-muted); color: white;">Close</button>
     </div>
   </div>
 </div>

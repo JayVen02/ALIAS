@@ -133,6 +133,7 @@ def api_create_category():
         return {"error": "Category name is required."}, 400
     try:
         new_id = create_category(mysql, name)
+        log_action(mysql, new_id, session.get("user_id"), "CREATE", new_value=f"Category: {name}")
         mysql.connection.commit()
         return {"id": new_id, "name": name.upper()}, 201
     except Exception as exc:
@@ -149,6 +150,7 @@ def api_update_category(category_id):
         updated = update_category(mysql, category_id, name)
         if not updated:
             return {"error": "Category not found."}, 404
+        log_action(mysql, category_id, session.get("user_id"), "UPDATE", new_value=f"Category renamed to: {name}")
         mysql.connection.commit()
         return {"message": "Category updated"}
     except Exception as exc:
@@ -158,6 +160,7 @@ def api_update_category(category_id):
 @admin_required
 def api_delete_category(category_id):
     try:
+        log_action(mysql, category_id, session.get("user_id"), "DELETE", new_value=f"Category ID {category_id} deleted")
         delete_category(mysql, category_id)
         mysql.connection.commit()
         return {"message": "Category deleted"}

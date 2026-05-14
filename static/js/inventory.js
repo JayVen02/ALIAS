@@ -511,6 +511,70 @@
 
     renderFilters();
     await loadItems();
+
+  
+    const btnManageCat = document.getElementById('btnManageCategories');
+    const manageCatModal = document.getElementById('manageCatModal');
+    const manageCatClose = document.getElementById('manageCatClose');
+
+    if (btnManageCat) {
+      btnManageCat.addEventListener('click', () => {
+        renderCategoryList();
+        manageCatModal.classList.remove('hidden');
+      });
+      manageCatClose.addEventListener('click', () => {
+        manageCatModal.classList.add('hidden');
+      });
+       document.getElementById('btnAddCategory').addEventListener('click', async () => {
+        const input = document.getElementById('newCategoryName');
+        const name = input.value.trim();
+        if (!name) return;
+        try {
+          const res = await fetch('/api/categories', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name })
+          });
+          const data = await res.json();
+          if (res.ok) {
+            input.value = '';
+            await loadCategories();
+            await loadSubcategories();
+            renderCategoryList();
+            renderFilters();
+            showToast('Category added!', 'success');
+          } else {
+            showToast(data.error || 'Failed to add category', 'error');
+          }
+        } catch (e) {
+          showToast('Error: ' + e.message, 'error');
+        }
+      });
+    }
+
+    function renderCategoryList() {
+      const list = document.getElementById('categoryList');
+      if (!list) return;
+      list.innerHTML = '';
+      categories.forEach(c => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;';
+        row.innerHTML = `
+          <input type="text" value="${c.name}" style="flex:1; padding:0.4rem 0.6rem; border:1px solid #ccc; border-radius:8px;">
+          <button style="padding:0.4rem 0.8rem; border-radius:8px; background:#31449B; color:white; border:none; cursor:pointer;">Save</button>
+          <button style="padding:0.4rem 0.8rem; border-radius:8px; background:#e74c3c; color:white; border:none; cursor:pointer;">Delete</button>
+        `;
+        const input = row.querySelector('input');
+        row.querySelectorAll('button')[0].addEventListener('click', () => updateCategory(c.id, input.value.trim()));
+        row.querySelectorAll('button')[1].addEventListener('click', () => {
+          if (confirm(`Delete category "${c.name}"? All its subcategories and items will also be deleted.`)) {
+            deleteCategory(c.id);
+          }
+        });
+        list.appendChild(row);
+      });
+    }
+
     bindEvents();
   };
 
@@ -566,4 +630,11 @@ async function updateCategory(id, newName) {
   const data = await res.json();
   if (res.ok) { showToast('Category updated', 'success'); location.reload(); }
   else showToast(data.error || 'Failed', 'error');
+}
+
+async function deleteCategory(id) {
+  const res = await fetch(`/api/categories/${id}`, { method: 'DELETE' });
+  const data = await res.json();
+  if (res.ok) { alert('Category deleted!'); location.reload(); }
+  else alert(data.error || 'Failed');
 }
