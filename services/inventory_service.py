@@ -141,3 +141,20 @@ def delete_category(db, category_id):
 def delete_subcategory(db, subcategory_id):
     cur = db.connection.cursor()
     cur.execute("DELETE FROM subcategories WHERE id = %s", (subcategory_id,))
+    
+    
+def create_subcategory(db, category_id, name):
+    cur = db.connection.cursor()
+    cur.execute(
+        "INSERT INTO subcategories (name, category_id) VALUES (%s, %s)",
+        (name.strip(), category_id)
+    )
+    return cur.lastrowid
+
+def update_subcategory(db, subcategory_id, name):
+    cur = db.connection.cursor()
+    cur.execute(
+        "UPDATE subcategories SET name = %s WHERE id = %s",
+        (name.strip(), subcategory_id)
+    )
+    return cur.rowcount > 0

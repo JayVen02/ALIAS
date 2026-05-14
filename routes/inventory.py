@@ -14,6 +14,8 @@ from services.inventory_service import (
     update_category,
     delete_category,
     delete_subcategory,
+    create_subcategory,  
+    update_subcategory,
 )
 
 
@@ -176,5 +178,38 @@ def api_delete_subcategory(subcategory_id):
         delete_subcategory(mysql, subcategory_id)
         mysql.connection.commit()
         return {"message": "Subcategory deleted"}
+    except Exception as exc:
+        return {"error": str(exc)}, 500
+    
+@inventory_bp.route("/subcategories", methods=["POST"])
+@admin_required
+def api_create_subcategory():
+    data = request.json or {}
+    name = (data.get("name") or "").strip()
+    category_id = data.get("category_id")
+    if not name or not category_id:
+        return {"error": "Name and category are required."}, 400
+    try:
+        new_id = create_subcategory(mysql, category_id, name)
+        log_action(mysql, new_id, session.get("user_id"), "CREATE", new_value=f"Subcategory: {name}")
+        mysql.connection.commit()
+        return {"id": new_id, "name": name}, 201
+    except Exception as exc:
+        return {"error": str(exc)}, 500
+
+@inventory_bp.route("/subcategories/<int:subcategory_id>", methods=["PUT"])
+@admin_required
+def api_update_subcategory(subcategory_id):
+    data = request.json or {}
+    name = (data.get("name") or "").strip()
+    if not name:
+        return {"error": "Subcategory name is required."}, 400
+    try:
+        updated = update_subcategory(mysql, subcategory_id, name)
+        if not updated:
+            return {"error": "Subcategory not found."}, 404
+        log_action(mysql, subcategory_id, session.get("user_id"), "UPDATE", new_value=f"Subcategory renamed to: {name}")
+        mysql.connection.commit()
+        return {"message": "Subcategory updated"}
     except Exception as exc:
         return {"error": str(exc)}, 500

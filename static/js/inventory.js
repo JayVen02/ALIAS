@@ -553,27 +553,124 @@
     }
 
     function renderCategoryList() {
-      const list = document.getElementById('categoryList');
-      if (!list) return;
-      list.innerHTML = '';
-      categories.forEach(c => {
-        const row = document.createElement('div');
-        row.style.cssText = 'display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;';
-        row.innerHTML = `
-          <input type="text" value="${c.name}" style="flex:1; padding:0.4rem 0.6rem; border:1px solid #ccc; border-radius:8px;">
-          <button style="padding:0.4rem 0.8rem; border-radius:8px; background:#31449B; color:white; border:none; cursor:pointer;">Save</button>
-          <button style="padding:0.4rem 0.8rem; border-radius:8px; background:#e74c3c; color:white; border:none; cursor:pointer;">Delete</button>
-        `;
-        const input = row.querySelector('input');
-        row.querySelectorAll('button')[0].addEventListener('click', () => updateCategory(c.id, input.value.trim()));
-        row.querySelectorAll('button')[1].addEventListener('click', () => {
-          if (confirm(`Delete category "${c.name}"? All its subcategories and items will also be deleted.`)) {
-            deleteCategory(c.id);
-          }
-        });
-        list.appendChild(row);
+  const list = document.getElementById('categoryList');
+  if (!list) return;
+  list.innerHTML = '';
+
+  categories.forEach(c => {
+    // ── Category
+    const catRow = document.createElement('div');
+    catRow.style.cssText = 'margin-bottom:1rem; border:1px solid #ddd; border-radius:10px; padding:0.75rem;';
+    catRow.innerHTML = `
+      <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+        <input type="text" value="${c.name}" style="flex:1; padding:0.4rem 0.6rem; border:1px solid #ccc; border-radius:8px; font-weight:600;">
+        <button class="btn-save-cat" style="padding:0.4rem 0.8rem; border-radius:8px; background:#31449B; color:white; border:none; cursor:pointer;">Save</button>
+        <button class="btn-delete-cat" style="padding:0.4rem 0.8rem; border-radius:8px; background:#e74c3c; color:white; border:none; cursor:pointer;">Delete</button>
+      </div>
+
+      <!-- Subcategories under this category -->
+      <div class="subcat-list" style="padding-left:1rem;">
+        ${subcategories.filter(s => s.category_id == c.id).map(s => `
+          <div class="subcat-row" data-id="${s.id}" style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem;">
+            <input type="text" value="${s.name}" style="flex:1; padding:0.3rem 0.6rem; border:1px solid #ccc; border-radius:8px; font-size:0.9rem;">
+            <button class="btn-save-sub" style="padding:0.3rem 0.6rem; border-radius:8px; background:#31449B; color:white; border:none; cursor:pointer; font-size:0.85rem;">Save</button>
+            <button class="btn-delete-sub" style="padding:0.3rem 0.6rem; border-radius:8px; background:#e74c3c; color:white; border:none; cursor:pointer; font-size:0.85rem;">Delete</button>
+          </div>
+        `).join('')}
+
+        <!-- Add new subcategory row -->
+        <div style="display:flex; align-items:center; gap:0.5rem; margin-top:0.5rem;">
+          <input type="text" class="new-subcat-input" placeholder="New subcategory..." style="flex:1; padding:0.3rem 0.6rem; border:1px dashed #aaa; border-radius:8px; font-size:0.9rem;">
+          <button class="btn-add-sub" style="padding:0.3rem 0.6rem; border-radius:8px; background:#28a745; color:white; border:none; cursor:pointer; font-size:0.85rem;">Add</button>
+        </div>
+      </div>
+    `;
+
+    // Save category
+    const catInput = catRow.querySelector('input');
+    catRow.querySelector('.btn-save-cat').addEventListener('click', async () => {
+      const newName = catInput.value.trim();
+      if (!newName) return;
+      const res = await fetch(`/api/categories/${c.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newName })
       });
-    }
+      const data = await res.json();
+      if (res.ok) {
+        await loadCategories(); await loadSubcategories();
+        renderCategoryList(); renderFilters();
+        showToast('Category updated!', 'success');
+      } else showToast(data.error || 'Failed', 'error');
+    });
+
+    // Delete cat
+    catRow.querySelector('.btn-delete-cat').addEventListener('click', async () => {
+      if (!confirm(`Delete category "${c.name}"? All subcategories and items will also be deleted.`)) return;
+      const res = await fetch(`/api/categories/${c.id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (res.ok) {
+        await loadCategories(); await loadSubcategories();
+        renderCategoryList(); renderFilters();
+        showToast('Category deleted!', 'success');
+      } else showToast(data.error || 'Failed', 'error');
+    });
+
+    // Save subcat
+    catRow.querySelectorAll('.subcat-row').forEach(row => {
+      const subId = row.dataset.id;
+      const subInput = row.querySelector('input');
+      row.querySelector('.btn-save-sub').addEventListener('click', async () => {
+        const newName = subInput.value.trim();
+        if (!newName) return;
+        const res = await fetch(`/api/subcategories/${subId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: newName })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          await loadSubcategories();
+          renderCategoryList();
+          showToast('Subcategory updated!', 'success');
+        } else showToast(data.error || 'Failed', 'error');
+      });
+
+      // Delete subcat
+      row.querySelector('.btn-delete-sub').addEventListener('click', async () => {
+        if (!confirm(`Delete subcategory? Items using it will also be affected.`)) return;
+        const res = await fetch(`/api/subcategories/${subId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (res.ok) {
+          await loadSubcategories();
+          renderCategoryList();
+          showToast('Subcategory deleted!', 'success');
+        } else showToast(data.error || 'Failed', 'error');
+      });
+    });
+
+    // Add new subcategory
+    catRow.querySelector('.btn-add-sub').addEventListener('click', async () => {
+      const input = catRow.querySelector('.new-subcat-input');
+      const name = input.value.trim();
+      if (!name) return;
+      const res = await fetch('/api/subcategories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, category_id: c.id })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        input.value = '';
+        await loadSubcategories();
+        renderCategoryList();
+        showToast('Subcategory added!', 'success');
+      } else showToast(data.error || 'Failed', 'error');
+    });
+
+    list.appendChild(catRow);
+  });
+}
 
     bindEvents();
   };
