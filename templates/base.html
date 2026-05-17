@@ -14,6 +14,9 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- Plotly -->
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>
+
     <!-- main.css -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
@@ -44,6 +47,103 @@
             {% block content %}{% endblock %}
         </main>
     </div>
+
+    <!-- Global Toast Notification -->
+    <div id="globalToast" class="toast hidden" style="
+        position: fixed; 
+        top: 20px; 
+        right: 20px; 
+        z-index: 9999; 
+        background: #e74c3c; 
+        color: white; 
+        padding: 0.8rem 1.5rem; 
+        border-radius: 15px; 
+        font-weight: 800; 
+        font-size: 0.85rem;
+        box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4); 
+        transform: translateX(120%);
+        transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        pointer-events: none;
+    ">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- Global System Modal (For Errors/Alerts) -->
+    <div id="globalSystemModal" class="modal {% if not get_flashed_messages() %}hidden{% endif %}">
+        <div class="modal-content" style="max-width: 450px; text-align: center; border-radius: 40px; padding: 3rem;">
+            <div style="background: #ffe8e8; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
+            <h2 id="globalModalTitle" style="color: var(--primary-navy); margin-bottom: 0.5rem; font-weight: 900;">SYSTEM NOTICE</h2>
+            <div id="globalModalBody">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <p style="color: var(--text-muted); font-weight: 700; margin-bottom: 2rem; font-size: 0.9rem; line-height: 1.5;">
+                                {{ message }}
+                            </p>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+            <button onclick="closeGlobalModal()" class="btn-primary" style="padding: 0.8rem 3rem; border-radius: 25px; width: 100%;">CONTINUE</button>
+        </div>
+    </div>
+
+    <script>
+        function closeGlobalModal() {
+            document.getElementById('globalSystemModal').classList.add('hidden');
+        }
+
+        function showGlobalModal(title, message) {
+            document.getElementById('globalModalTitle').textContent = title;
+            document.getElementById('globalModalBody').innerHTML = `<p style="color: var(--text-muted); font-weight: 700; margin-bottom: 2rem; font-size: 0.9rem; line-height: 1.5;">${message}</p>`;
+            document.getElementById('globalSystemModal').classList.remove('hidden');
+        }
+
+        // ── Global Input Limit Monitoring ──────────────────────────────────
+        document.addEventListener('input', function(e) {
+            const target = e.target;
+            if (target.hasAttribute('maxlength')) {
+                const max = parseInt(target.getAttribute('maxlength'));
+                if (max && target.value.length >= max) {
+                    showGlobalModal("LIMIT REACHED", "You have reached the maximum allowed length of " + max + " characters for this field.");
+                    target.blur();
+                }
+            }
+        });
+
+        let toastTimeout;
+        function showGlobalToast(message, duration = 3000) {
+            const toast = document.getElementById('globalToast');
+            const msgSpan = document.getElementById('toastMessage');
+            
+            clearTimeout(toastTimeout);
+            msgSpan.textContent = message;
+            
+            // Show
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.style.transform = 'translateX(0)';
+            }, 10);
+
+            // Hide
+            toastTimeout = setTimeout(() => {
+                toast.style.transform = 'translateX(120%)';
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 400);
+            }, duration);
+        }
+    </script>
 
     <!-- Global Scripts -->
    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>

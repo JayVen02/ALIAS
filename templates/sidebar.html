@@ -22,6 +22,12 @@
             <li class="nav-item {{ 'active' if request.path == '/manage-accounts' }}">
                 <a href="{{ url_for('pages.manage_accounts') }}">Manage Accounts</a>
             </li>
+            <li class="nav-item {{ 'active' if request.path == '/approvals' }}">
+                <a href="{{ url_for('pages.approvals') }}" style="display:flex; align-items:center; justify-content:space-between;">
+                    Approvals
+                    <span class="pending-badge" id="sidebarPendingBadge" style="display:none;"></span>
+                </a>
+            </li>
             {% endif %}
         </ul>
     </nav>

@@ -245,9 +245,9 @@
             const approved = document.getElementById('modalApproved').value;
             const approvedRole = document.getElementById('modalApprovedRole').value;
             
-            let url = `/api/generate_pdf_monthly?category=${activeDownloadParams.category}&month=${activeDownloadParams.month}&year=${activeDownloadParams.year}`;
-            if (activeDownloadParams.subcategory) url += `&subcategory=${activeDownloadParams.subcategory}`;
-            if (activeDownloadParams.day) url += `&day=${activeDownloadParams.day}`;
+            let url = `/api/generate_pdf_monthly?category=${encodeURIComponent(activeDownloadParams.category)}&month=${activeDownloadParams.month}&year=${activeDownloadParams.year}`;
+            if (activeDownloadParams.subcategory) url += `&subcategory=${encodeURIComponent(activeDownloadParams.subcategory)}`;
+            if (activeDownloadParams.day) url += `&day=${encodeURIComponent(activeDownloadParams.day)}`;
             
             url += `&person=${encodeURIComponent(person)}&position=${encodeURIComponent(position)}&dept=${encodeURIComponent(dept)}`;
             url += `&certified=${encodeURIComponent(certified)}&certified_role=${encodeURIComponent(certifiedRole)}`;
@@ -260,7 +260,7 @@
         downloadBtn.onclick = () => {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth() + 1;
-            openModal({ category: "{{ category_name }}", month, year });
+            openModal({ category: "{{ category_name | safe }}".trim(), month, year });
         };
         
         // Update row download links to open modal
@@ -270,8 +270,9 @@
                 const d = btn.getAttribute('data-day');
                 const m = btn.getAttribute('data-month');
                 const y = btn.getAttribute('data-year');
-                const cat = btn.getAttribute('data-category');
-                const sub = btn.getAttribute('data-subcategory');
+                const cat = (btn.getAttribute('data-category') || '').trim();
+                const sub = (btn.getAttribute('data-subcategory') || '').trim();
+
                 openModal({ category: cat, subcategory: sub, day: d, month: m, year: y });
             };
         });

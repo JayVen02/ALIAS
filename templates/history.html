@@ -21,6 +21,8 @@
                     <th>OFFICER</th>
                     <th>DATE</th>
                     <th>CATEGORY</th>
+                    <th>SUBCATEGORY</th>
+                    <th>ITEM NAME</th>
                     <th>ACTIVITY</th>
                     <th>STATUS</th>
                 </tr>
@@ -31,6 +33,8 @@
                     <td>{{ log.officer_name }}</td>
                     <td>{{ log.created_at.strftime('%B %d, %Y') }}</td>
                     <td>{{ log.category_name if log.category_name else 'N/A' }}</td>
+                    <td>{{ log.subcategory_name if log.subcategory_name else 'N/A' }}</td>
+                    <td>{{ log.item_name if log.item_name else 'N/A' }}</td>
                     <td>
                         {% if log.action_type == 'CREATE' %}Added New Item
                         {% elif log.action_type == 'UPDATE' %}Updated Inventory
@@ -41,7 +45,7 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">No history recorded yet.</td>
+                    <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">No history recorded yet.</td>
                 </tr>
                 {% endfor %}
             </tbody>

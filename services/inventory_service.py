@@ -94,11 +94,11 @@ def add_quantity_to_item(db, item_id, quantity):
 
 # ── Write ─────────────────────────────────────────────────────────────────────
 
-def create_item(db, category_id, subcategory_id, name, quantity):
+def create_item(db, category_id, subcategory_id, name, quantity, stock_number=None):
     cur = db.connection.cursor()
     cur.execute(
-        "INSERT INTO inventory_items (category_id, subcategory_id, name, quantity) VALUES (%s, %s, %s, %s)",
-        (category_id, subcategory_id, name, quantity),
+        "INSERT INTO inventory_items (category_id, subcategory_id, name, quantity, stock_number) VALUES (%s, %s, %s, %s, %s)",
+        (category_id, subcategory_id, name, quantity, stock_number),
     )
     return cur.lastrowid
 
