@@ -69,6 +69,28 @@ def get_items_by_category_name(db, category_name):
     cur.execute(ITEM_SELECT + " WHERE i.category_id = %s", (cat["id"],))
     return cat, cur.fetchall()
 
+def find_item_by_name(db, name, category_id, subcategory_id):
+    cur = db.connection.cursor()
+    cur.execute(
+        """
+        SELECT * FROM inventory_items
+        WHERE LOWER(name) = LOWER(%s)
+          AND category_id = %s
+          AND subcategory_id = %s
+        LIMIT 1
+        """,
+        (name.strip(), category_id, subcategory_id),
+    )
+    return cur.fetchone()
+
+
+def add_quantity_to_item(db, item_id, quantity):
+    cur = db.connection.cursor()
+    cur.execute(
+        "UPDATE inventory_items SET quantity = quantity + %s, date_updated = CURDATE() WHERE id = %s",
+        (quantity, item_id),
+    )
+    return item_id
 
 # ── Write ─────────────────────────────────────────────────────────────────────
 

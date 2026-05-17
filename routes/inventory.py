@@ -10,6 +10,8 @@ from services.inventory_service import (
     update_item,
     delete_item,
     serialize_item,
+    find_item_by_name,
+    add_quantity_to_item,
 )
 from services.approval_service import ensure_requests_table, submit_request
 import json
@@ -104,6 +106,31 @@ def api_create_item():
         }, 202
 
     # ── Admin: apply immediately ──
+    existing = find_item_by_name(mysql, name, category_id, subcategory_id)
+
+    if existing:
+        item_id = existing["id"]
+
+        # Add quantity to existing item
+        add_quantity_to_item(mysql, item_id, quantity)
+
+        log_action(
+            mysql,
+            item_id,
+            session.get("user_id"),
+            "QUANTITY_ADJUST",
+            new_value=str(data),
+        )
+
+        mysql.connection.commit()
+
+        return {
+            "id": item_id,
+            "updated": True,
+            "message": "Existing item quantity updated.",
+        }, 200
+
+    # Create new item
     new_id = create_item(
         mysql,
         category_id,
@@ -112,9 +139,22 @@ def api_create_item():
         quantity,
         stock_number,
     )
-    log_action(mysql, new_id, session.get("user_id"), "CREATE", new_value=str(data))
+
+    log_action(
+        mysql,
+        new_id,
+        session.get("user_id"),
+        "CREATE",
+        new_value=str(data),
+    )
+
     mysql.connection.commit()
-    return {"id": new_id}, 201
+
+    return {
+        "id": new_id,
+        "updated": False,
+        "message": "New item created.",
+    }, 201
 
 
 @inventory_bp.route("/inventory/<int:item_id>", methods=["PUT"])

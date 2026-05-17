@@ -470,23 +470,50 @@
         createStockNumber.value = '';
         createName.value = '';
 
+        // ── Pending approval ───────────────────
         if (res.pending) {
           successTitle.textContent = 'CREATE REQUEST SUBMITTED!';
-          successModal.querySelectorAll('.pending-note').forEach(el => el.remove());
+
+          successModal.querySelectorAll('.pending-note')
+            .forEach(el => el.remove());
+
           const note = document.createElement('p');
+
           note.className = 'pending-note';
-          note.style.cssText = 'color:#f39c12; font-size:0.82rem; font-weight:700; margin-bottom:1rem;';
-          note.textContent = 'Awaiting admin approval before the item appears in inventory.';
-          successModal.querySelector('.modal-content').insertBefore(note, successModal.querySelector('#successContinueBtn'));
-        } else {
-          successTitle.textContent = 'ITEM CREATED!';
-          successModal.querySelectorAll('.pending-note').forEach(el => el.remove());
-          await loadItems();
-          expandedItemId = res.id;
-          editingItemId  = res.id;
-          renderTable();
+          note.style.cssText =
+            'color:#f39c12; font-size:0.82rem; font-weight:700; margin-bottom:1rem;';
+
+          note.textContent =
+            'Awaiting admin approval before the item appears in inventory.';
+
+          successModal.querySelector('.modal-content')
+            .insertBefore(
+              note,
+              successModal.querySelector('#successContinueBtn')
+            );
+
+          successModal.classList.remove('hidden');
+          return;
         }
+
+        // ── Admin immediate apply ──────────────
+        await loadItems();
+
+        expandedItemId = res.id;
+        editingItemId = res.id;
+
+        renderTable();
+
+        successModal.querySelectorAll('.pending-note')
+          .forEach(el => el.remove());
+
+        successTitle.textContent =
+          res.updated
+            ? 'QUANTITY UPDATED!'
+            : 'ITEM CREATED!';
+
         successModal.classList.remove('hidden');
+
       } catch (e) {
         showToast('Error: ' + e.message, 'error');
       }
@@ -503,7 +530,6 @@
         successModal.classList.add('hidden');
       };
     }
-
 
     // ── Search & Sort ─────────────────────────────
     let searchTimer;
