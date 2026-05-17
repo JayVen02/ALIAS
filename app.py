@@ -52,11 +52,11 @@ def create_app():
         # Content-Security-Policy — tightened for this app's known CDNs
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdn.plot.ly; "
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; "
             "img-src 'self' data: https://res.cloudinary.com; "
             "font-src 'self' https://fonts.gstatic.com; "
-            "connect-src 'self'; "
+            "connect-src 'self' https://cdn.jsdelivr.net; "
             "frame-ancestors 'none';"
         )
         # Permissions Policy — disable unused browser features

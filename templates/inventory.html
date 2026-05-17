@@ -8,15 +8,22 @@
             <p class="welcome-msg">Welcome, <em>{{ session['full_name'] }}!</em></p>
         </div>
         <div class="header-logo-container">
-            <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1777188010/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_zc0nex.png" alt="ALIAS Header">
+            <img src="https://res.cloudinary.com/dvblizd3z/image/upload/v1777188010/Alubijid%20Local%20Inventory%20and%20Audit%20System%20%28ALIAS%29/Menu_Header_zc0nex.png"
+                alt="ALIAS Header">
         </div>
     </div>
 </div>
 
 <div class="inventory-content" style="padding: 0 2rem 2rem;">
     <!-- Top Toolbar -->
-    <div class="toolbar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <button class="btn-primary" id="btnCreateNew" style="padding: 0.6rem 2rem; border-radius: 20px;">Create New Item</button>
+    <div class="toolbar"
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <button class="btn-primary" id="btnCreateNew" style="padding: 0.6rem 2rem; border-radius: 20px;">Create New
+                Item</button>
+            <button class="btn-primary" id="btnManageCategories"
+                style="padding: 0.6rem 2rem; border-radius: 20px; background: #4a5568;">Create Categories</button>
+        </div>
         <div class="select-wrapper">
             <select id="sortSelect">
                 <option value="latest">Sort By: Latest Update</option>
@@ -76,10 +83,13 @@
                 <select id="createSubcategory" class="modal-input" style="flex: 3;"></select>
                 <input type="number" id="createQuantity" placeholder="Qty" class="modal-input" min="1">
             </div>
-            <input type="text" id="createName" placeholder="Item Name" class="modal-input" style="width: 100%; margin-bottom: 1.5rem;">
+            <input type="text" id="createName" placeholder="Item Name" class="modal-input"
+                style="width: 100%; margin-bottom: 1.5rem;">
             <div style="display: flex; justify-content: center; gap: 1rem;">
-                <button class="btn-back" id="createBack" style="background: var(--text-muted); color: white; padding: 0.8rem 2.5rem; border-radius: 25px;">BACK</button>
-                <button class="btn-save" id="createNext" style="background: var(--primary-navy); color: white; padding: 0.8rem 2.5rem; border-radius: 25px;">CREATE</button>
+                <button class="btn-back" id="createBack"
+                    style="background: var(--text-muted); color: white; padding: 0.8rem 2.5rem; border-radius: 25px;">BACK</button>
+                <button class="btn-save" id="createNext"
+                    style="background: var(--primary-navy); color: white; padding: 0.8rem 2.5rem; border-radius: 25px;">CREATE</button>
             </div>
         </div>
     </div>
@@ -90,22 +100,126 @@
         <h2 style="color: #e74c3c; margin-bottom: 1rem; font-weight: 800;">Delete Item?</h2>
         <p id="deleteMsg" style="margin-bottom: 2rem; color: var(--text-muted); font-weight: 600;"></p>
         <div style="display: flex; justify-content: center; gap: 1rem;">
-            <button class="btn-primary" id="deleteCancelBtn" style="background: var(--text-muted); padding: 0.7rem 2rem; border-radius: 12px;">Cancel</button>
-            <button class="btn-primary" id="deleteConfirmBtn" style="background: #e74c3c; padding: 0.7rem 2rem; border-radius: 12px;">Delete</button>
+            <button class="btn-primary" id="deleteCancelBtn"
+                style="background: var(--text-muted); padding: 0.7rem 2rem; border-radius: 12px;">Cancel</button>
+            <button class="btn-primary" id="deleteConfirmBtn"
+                style="background: #e74c3c; padding: 0.7rem 2rem; border-radius: 12px;">Delete</button>
         </div>
     </div>
 </div>
 
 <div id="successModal" class="modal hidden">
-    <div class="modal-content" style="max-width: 350px; text-align: center; padding: 2.5rem; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
-        <h2 id="successTitle" style="color: var(--primary-navy); margin-bottom: 2rem; font-size: 1.4rem; font-weight: 900; letter-spacing: 1px;">ITEM EDITED!</h2>
-        <button class="btn-primary" id="successContinueBtn" style="width: 100%; padding: 0.8rem; border-radius: 15px; background: #31449B; font-weight: 800; font-size: 0.9rem;">Continue</button>
+    <div class="modal-content"
+        style="max-width: 350px; text-align: center; padding: 2.5rem; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
+        <h2 id="successTitle"
+            style="color: var(--primary-navy); margin-bottom: 2rem; font-size: 1.4rem; font-weight: 900; letter-spacing: 1px;">
+            ITEM EDITED!</h2>
+        <button class="btn-primary" id="successContinueBtn"
+            style="width: 100%; padding: 0.8rem; border-radius: 15px; background: #31449B; font-weight: 800; font-size: 0.9rem;">Continue</button>
     </div>
 </div>
 
 <div id="toast" class="toast hidden"></div>
 
 {# Toast styles live in main.css #}
+
+<!-- MANAGE CATEGORIES MODAL -->
+<div id="manageCatModal" class="modal hidden">
+    <div class="modal-content" style="max-width: 480px; padding: 2.5rem; border-radius: 30px;">
+        <h2
+            style="color: var(--primary-navy); margin-bottom: 1.5rem; text-align: center; font-weight: 900; letter-spacing: 1px;">
+            CREATE CATEGORIES</h2>
+
+        <!-- Tabs -->
+        <div
+            style="display: flex; gap: 0; margin-bottom: 1.5rem; border-radius: 12px; overflow: hidden; border: 2px solid #e2e8f0;">
+            <button id="tabAddCat" class="cat-tab cat-tab-active"
+                style="flex:1; padding: 0.65rem; font-weight: 700; font-size: 0.85rem; border: none; cursor: pointer; transition: background 0.2s;">Add
+                Category</button>
+            <button id="tabAddSub" class="cat-tab"
+                style="flex:1; padding: 0.65rem; font-weight: 700; font-size: 0.85rem; border: none; cursor: pointer; transition: background 0.2s;">Add
+                Subcategory</button>
+        </div>
+
+        <!-- Panel: Add Category -->
+        <div id="panelAddCat">
+            <label
+                style="display: block; font-weight: 700; margin-bottom: 0.4rem; color: var(--primary-navy); font-size: 0.85rem;">CATEGORY
+                NAME</label>
+            <input type="text" id="newCatName" class="modal-input" maxlength="100" placeholder="e.g. Office Supplies"
+                style="width: 100%; margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: center; gap: 1rem;">
+                <button class="btn-back" id="manageCatClose"
+                    style="background: var(--text-muted); color: white; padding: 0.8rem 2.5rem; border-radius: 25px;">CANCEL</button>
+                <button class="btn-save" id="saveCatBtn"
+                    style="background: var(--primary-navy); color: white; padding: 0.8rem 2.5rem; border-radius: 25px;">SAVE</button>
+            </div>
+            <!-- Existing categories list -->
+            <div style="margin-top: 1.25rem;">
+                <p style="font-weight: 700; font-size: 0.78rem; color: var(--primary-navy); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Existing Categories</p>
+                <div id="catListContainer" style="max-height: 150px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 10px;"></div>
+            </div>
+        </div>
+
+        <!-- Panel: Add Subcategory -->
+        <div id="panelAddSub" style="display:none;">
+            <label
+                style="display: block; font-weight: 700; margin-bottom: 0.4rem; color: var(--primary-navy); font-size: 0.85rem;">PARENT
+                CATEGORY</label>
+            <select id="subCatParent" class="modal-input" style="width: 100%; margin-bottom: 1rem;">
+                <option value="">Select Category</option>
+            </select>
+            <label
+                style="display: block; font-weight: 700; margin-bottom: 0.4rem; color: var(--primary-navy); font-size: 0.85rem;">SUBCATEGORY
+                NAME</label>
+            <input type="text" id="newSubName" class="modal-input" maxlength="100" placeholder="e.g. Bond Paper"
+                style="width: 100%; margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: center; gap: 1rem;">
+                <button class="btn-back" id="manageSubClose"
+                    style="background: var(--text-muted); color: white; padding: 0.8rem 2.5rem; border-radius: 25px;">CANCEL</button>
+                <button class="btn-save" id="saveSubBtn"
+                    style="background: var(--primary-navy); color: white; padding: 0.8rem 2.5rem; border-radius: 25px;">SAVE</button>
+            </div>
+            <!-- Existing subcategories list -->
+            <div style="margin-top: 1.25rem;">
+                <p style="font-weight: 700; font-size: 0.78rem; color: var(--primary-navy); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Existing Subcategories</p>
+                <div id="subListContainer" style="max-height: 150px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 10px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CATEGORY RESULT MODAL (success / error) -->
+<div id="catResultModal" class="modal hidden">
+    <div class="modal-content" style="max-width: 380px; text-align: center; padding: 2.5rem; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.2);">
+        <!-- Icon circle -->
+        <div id="catResultIcon" style="width: 72px; height: 72px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; background: #e6f9f0;">
+            <!-- replaced by JS -->
+        </div>
+        <h2 id="catResultTitle" style="color: var(--primary-navy); font-size: 1.3rem; font-weight: 900; letter-spacing: 1px; margin-bottom: 0.75rem;"></h2>
+        <p id="catResultMsg" style="color: var(--text-muted); font-weight: 600; font-size: 0.9rem; margin-bottom: 1.75rem; line-height: 1.5;"></p>
+        <button id="catResultContinueBtn" class="btn-primary" style="width: 100%; padding: 0.85rem; border-radius: 15px; background: #31449B; font-weight: 800; font-size: 0.9rem;">Continue</button>
+    </div>
+</div>
+<!-- CATEGORY DELETE CONFIRM MODAL -->
+<div id="catDeleteModal" class="modal hidden">
+    <div class="modal-content" style="max-width: 400px; text-align: center; padding: 2.5rem; border-radius: 30px;">
+        <div style="width: 64px; height: 64px; border-radius: 50%; background: #fde8e8; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6l-1 14H6L5 6"></path>
+                <path d="M10 11v6M14 11v6"></path>
+                <path d="M9 6V4h6v2"></path>
+            </svg>
+        </div>
+        <h2 style="color: #e74c3c; margin-bottom: 0.75rem; font-weight: 900; font-size: 1.2rem;">Confirm Delete</h2>
+        <p id="catDeleteMsg" style="color: var(--text-muted); font-weight: 600; font-size: 0.88rem; margin-bottom: 2rem; line-height: 1.5;"></p>
+        <div style="display: flex; justify-content: center; gap: 1rem;">
+            <button id="catDeleteCancelBtn" class="btn-primary" style="background: var(--text-muted); padding: 0.7rem 2rem; border-radius: 12px;">Cancel</button>
+            <button id="catDeleteConfirmBtn" class="btn-primary" style="background: #e74c3c; padding: 0.7rem 2rem; border-radius: 12px;">Delete</button>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -117,21 +231,23 @@
 </script>
 <!-- CREATE CONFIRM MODAL -->
 <div id="createConfirmModal" class="modal hidden">
-  <div class="modal-content" style="max-width: 400px; text-align: center; padding: 2.5rem;">
-    <h2 style="color: var(--primary-navy); margin-bottom: 1rem; font-weight: 800;">
-      Create Item?
-    </h2>
-    <p style="margin-bottom: 2rem; color: var(--text-muted); font-weight: 600;">
-      Are you sure you want to create this item?
-    </p>
-    <div style="display: flex; justify-content: center; gap: 1rem;">
-      <button id="createCancelBtn" class="btn-primary" style="background: var(--text-muted); padding: 0.7rem 2rem; border-radius: 12px;">
-        Cancel
-      </button>
-      <button id="createConfirmBtn" class="btn-primary" style="background: #31449B; padding: 0.7rem 2rem; border-radius: 12px;">
-        Confirm
-      </button>
+    <div class="modal-content" style="max-width: 400px; text-align: center; padding: 2.5rem;">
+        <h2 style="color: var(--primary-navy); margin-bottom: 1rem; font-weight: 800;">
+            Create Item?
+        </h2>
+        <p style="margin-bottom: 2rem; color: var(--text-muted); font-weight: 600;">
+            Are you sure you want to create this item?
+        </p>
+        <div style="display: flex; justify-content: center; gap: 1rem;">
+            <button id="createCancelBtn" class="btn-primary"
+                style="background: var(--text-muted); padding: 0.7rem 2rem; border-radius: 12px;">
+                Cancel
+            </button>
+            <button id="createConfirmBtn" class="btn-primary"
+                style="background: #31449B; padding: 0.7rem 2rem; border-radius: 12px;">
+                Confirm
+            </button>
+        </div>
     </div>
-  </div>
 </div>
 {% endblock %}

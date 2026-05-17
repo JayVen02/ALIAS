@@ -6,6 +6,10 @@ from services.inventory_service import (
     get_all_categories,
     get_all_subcategories,
     get_items,
+    create_category,
+    create_subcategory,
+    delete_category,
+    delete_subcategory,
     create_item,
     update_item,
     delete_item,
@@ -23,20 +27,89 @@ def _is_admin():
     return session.get("role") == "admin"
 
 
-@inventory_bp.route("/categories", methods=["GET"])
+@inventory_bp.route("/categories", methods=["GET", "POST"])
 @login_required
 def api_categories():
+    if request.method == "GET":
+        try:
+            return {"categories": get_all_categories(mysql)}
+        except Exception as exc:
+            return {"error": str(exc)}, 500
+
+    # POST — create a new category
+    data = request.json or {}
+    name = (data.get("name") or "").strip()
+    if not name:
+        return {"error": "Category name is required."}, 400
+    if len(name) > 100:
+        return {"error": "Category name must be 100 characters or fewer."}, 400
     try:
-        return {"categories": get_all_categories(mysql)}
+        cat_id, created = create_category(mysql, name)
+        mysql.connection.commit()
+        return {
+            "id": cat_id,
+            "name": name,
+            "created": created,
+            "message": "Category created." if created else "Category already exists.",
+        }, 201 if created else 200
     except Exception as exc:
         return {"error": str(exc)}, 500
 
 
-@inventory_bp.route("/subcategories", methods=["GET"])
+@inventory_bp.route("/subcategories", methods=["GET", "POST"])
 @login_required
 def api_subcategories():
+    if request.method == "GET":
+        try:
+            return {"subcategories": get_all_subcategories(mysql)}
+        except Exception as exc:
+            return {"error": str(exc)}, 500
+
+    # POST — create a new subcategory
+    data = request.json or {}
+    name = (data.get("name") or "").strip()
+    category_id = data.get("category_id")
+    if not name:
+        return {"error": "Subcategory name is required."}, 400
+    if not category_id:
+        return {"error": "category_id is required."}, 400
+    if len(name) > 100:
+        return {"error": "Subcategory name must be 100 characters or fewer."}, 400
     try:
-        return {"subcategories": get_all_subcategories(mysql)}
+        sub_id, created = create_subcategory(mysql, category_id, name)
+        mysql.connection.commit()
+        return {
+            "id": sub_id,
+            "name": name,
+            "category_id": int(category_id),
+            "created": created,
+            "message": "Subcategory created." if created else "Subcategory already exists.",
+        }, 201 if created else 200
+    except Exception as exc:
+        return {"error": str(exc)}, 500
+
+@inventory_bp.route("/categories/<int:cat_id>", methods=["DELETE"])
+@login_required
+def api_delete_category(cat_id):
+    try:
+        delete_category(mysql, cat_id)
+        mysql.connection.commit()
+        return {"message": "Category deleted."}
+    except ValueError as ve:
+        return {"error": str(ve)}, 409
+    except Exception as exc:
+        return {"error": str(exc)}, 500
+
+
+@inventory_bp.route("/subcategories/<int:sub_id>", methods=["DELETE"])
+@login_required
+def api_delete_subcategory(sub_id):
+    try:
+        delete_subcategory(mysql, sub_id)
+        mysql.connection.commit()
+        return {"message": "Subcategory deleted."}
+    except ValueError as ve:
+        return {"error": str(ve)}, 409
     except Exception as exc:
         return {"error": str(exc)}, 500
 

@@ -531,7 +531,256 @@
       };
     }
 
-    // ── Search & Sort ─────────────────────────────
+    // ── Manage Categories Modal ───────────────────────────────────────────
+    const manageCatModal = document.getElementById('manageCatModal');
+    const btnManageCategories = document.getElementById('btnManageCategories');
+    const tabAddCat = document.getElementById('tabAddCat');
+    const tabAddSub = document.getElementById('tabAddSub');
+    const panelAddCat = document.getElementById('panelAddCat');
+    const panelAddSub = document.getElementById('panelAddSub');
+    const newCatName = document.getElementById('newCatName');
+    const saveCatBtn = document.getElementById('saveCatBtn');
+    const manageCatClose = document.getElementById('manageCatClose');
+    const subCatParent = document.getElementById('subCatParent');
+    const newSubName = document.getElementById('newSubName');
+    const saveSubBtn = document.getElementById('saveSubBtn');
+    const manageSubClose = document.getElementById('manageSubClose');
+    const catListContainer = document.getElementById('catListContainer');
+    const subListContainer = document.getElementById('subListContainer');
+
+    // ── Category Result Modal ─────────────────────────────────────────────
+    const catResultModal = document.getElementById('catResultModal');
+    const catResultIcon = document.getElementById('catResultIcon');
+    const catResultTitle = document.getElementById('catResultTitle');
+    const catResultMsg = document.getElementById('catResultMsg');
+    const catResultContinueBtn = document.getElementById('catResultContinueBtn');
+
+    // ── Category Delete Confirm Modal ─────────────────────────────────────
+    const catDeleteModal = document.getElementById('catDeleteModal');
+    const catDeleteMsg = document.getElementById('catDeleteMsg');
+    const catDeleteCancelBtn = document.getElementById('catDeleteCancelBtn');
+    const catDeleteConfirmBtn = document.getElementById('catDeleteConfirmBtn');
+    let catDeleteTarget = null; // { type, id, name }
+
+    // ── Helpers ───────────────────────────────────────────────────────────
+    const TRASH_SVG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="3 6 5 6 21 6"></polyline>
+      <path d="M19 6l-1 14H6L5 6"></path>
+      <path d="M10 11v6M14 11v6"></path>
+      <path d="M9 6V4h6v2"></path></svg>`;
+
+    function showCatResult(success, title, message, onContinue) {
+      if (success) {
+        catResultIcon.style.background = '#e6f9f0';
+        catResultIcon.innerHTML = `<svg width="36" height="36" viewBox="0 0 24 24" fill="none"
+          stroke="#27ae60" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline></svg>`;
+      } else {
+        catResultIcon.style.background = '#fde8e8';
+        catResultIcon.innerHTML = `<svg width="36" height="36" viewBox="0 0 24 24" fill="none"
+          stroke="#e74c3c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+      }
+      catResultTitle.textContent = title;
+      catResultMsg.textContent = message;
+      catResultContinueBtn.onclick = () => {
+        catResultModal.classList.add('hidden');
+        if (onContinue) onContinue();
+      };
+      manageCatModal.classList.add('hidden');
+      catDeleteModal.classList.add('hidden');
+      catResultModal.classList.remove('hidden');
+    }
+
+    // ── List Rendering ────────────────────────────────────────────────────
+    function makeDelBtn(type, id, name) {
+      const btn = document.createElement('button');
+      btn.innerHTML = TRASH_SVG;
+      btn.title = `Delete ${type}`;
+      btn.style.cssText = 'background:none;border:none;cursor:pointer;padding:4px;color:#e74c3c;line-height:1;flex-shrink:0;';
+      btn.addEventListener('click', () => {
+        catDeleteTarget = { type, id, name };
+        catDeleteMsg.textContent = `Are you sure you want to delete "${name}"? This cannot be undone.`;
+        manageCatModal.classList.add('hidden');
+        catDeleteModal.classList.remove('hidden');
+      });
+      return btn;
+    }
+
+    function renderCatList() {
+      if (!catListContainer) return;
+      catListContainer.innerHTML = '';
+      if (!categories.length) {
+        catListContainer.innerHTML = '<p style="text-align:center;color:var(--text-muted);font-size:0.82rem;padding:0.75rem;">No categories yet.</p>';
+        return;
+      }
+      categories.forEach(c => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:0.45rem 0.75rem;border-bottom:1px solid #f1f5f9;';
+        const label = document.createElement('span');
+        label.style.cssText = 'font-size:0.85rem;font-weight:600;color:var(--primary-navy);';
+        label.textContent = c.name;
+        row.appendChild(label);
+        row.appendChild(makeDelBtn('category', c.id, c.name));
+        catListContainer.appendChild(row);
+      });
+    }
+
+    function renderSubList() {
+      if (!subListContainer) return;
+      const catId = subCatParent.value;
+      subListContainer.innerHTML = '';
+      if (!catId) {
+        subListContainer.innerHTML = '<p style="text-align:center;color:var(--text-muted);font-size:0.82rem;padding:0.75rem;">Select a category above.</p>';
+        return;
+      }
+      const subs = subcategories.filter(s => s.category_id == catId);
+      if (!subs.length) {
+        subListContainer.innerHTML = '<p style="text-align:center;color:var(--text-muted);font-size:0.82rem;padding:0.75rem;">No subcategories yet.</p>';
+        return;
+      }
+      subs.forEach(s => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:0.45rem 0.75rem;border-bottom:1px solid #f1f5f9;';
+        const label = document.createElement('span');
+        label.style.cssText = 'font-size:0.85rem;font-weight:600;color:var(--primary-navy);';
+        label.textContent = s.name;
+        row.appendChild(label);
+        row.appendChild(makeDelBtn('subcategory', s.id, s.name));
+        subListContainer.appendChild(row);
+      });
+    }
+
+    // ── Delete Confirm Handlers ───────────────────────────────────────────
+    catDeleteCancelBtn.addEventListener('click', () => {
+      catDeleteModal.classList.add('hidden');
+      catDeleteTarget = null;
+      manageCatModal.classList.remove('hidden');
+    });
+
+    catDeleteConfirmBtn.addEventListener('click', async () => {
+      if (!catDeleteTarget) return;
+      const { type, id, name } = catDeleteTarget;
+      const url = type === 'category' ? `/api/categories/${id}` : `/api/subcategories/${id}`;
+      catDeleteTarget = null;
+      catDeleteConfirmBtn.disabled = true;
+      try {
+        await apiFetch(url, { method: 'DELETE' });
+        if (type === 'category') {
+          await loadCategories();
+          await loadSubcategories();
+        } else {
+          await loadSubcategories();
+        }
+        renderFilters();
+        showCatResult(true,
+          type === 'category' ? 'CATEGORY DELETED!' : 'SUBCATEGORY DELETED!',
+          `"${name}" has been removed.`,
+          openManageCatModal);
+      } catch (e) {
+        showCatResult(false, 'CANNOT DELETE', e.message, openManageCatModal);
+      } finally {
+        catDeleteConfirmBtn.disabled = false;
+      }
+    });
+
+    // ── Tab + Modal Open ──────────────────────────────────────────────────
+    const TAB_ACTIVE_BG = 'var(--primary-navy)';
+    const TAB_ACTIVE_COLOR = '#fff';
+    const TAB_IDLE_BG = '#f8fafc';
+    const TAB_IDLE_COLOR = '#4a5568';
+
+    function applyTabStyles(activeBtn, idleBtn) {
+      activeBtn.style.background = TAB_ACTIVE_BG;
+      activeBtn.style.color = TAB_ACTIVE_COLOR;
+      idleBtn.style.background = TAB_IDLE_BG;
+      idleBtn.style.color = TAB_IDLE_COLOR;
+    }
+
+    function openManageCatModal() {
+      subCatParent.innerHTML = '<option value="">Select Category</option>';
+      categories.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name;
+        subCatParent.appendChild(opt);
+      });
+      panelAddCat.style.display = '';
+      panelAddSub.style.display = 'none';
+      applyTabStyles(tabAddCat, tabAddSub);
+      newCatName.value = '';
+      newSubName.value = '';
+      subCatParent.value = '';
+      renderCatList();
+      manageCatModal.classList.remove('hidden');
+    }
+
+    tabAddCat.addEventListener('click', () => {
+      panelAddCat.style.display = '';
+      panelAddSub.style.display = 'none';
+      applyTabStyles(tabAddCat, tabAddSub);
+      renderCatList();
+    });
+
+    tabAddSub.addEventListener('click', () => {
+      panelAddCat.style.display = 'none';
+      panelAddSub.style.display = '';
+      applyTabStyles(tabAddSub, tabAddCat);
+      renderSubList();
+    });
+
+    subCatParent.addEventListener('change', renderSubList);
+
+    btnManageCategories.addEventListener('click', openManageCatModal);
+    manageCatClose.addEventListener('click', () => manageCatModal.classList.add('hidden'));
+    manageSubClose.addEventListener('click', () => manageCatModal.classList.add('hidden'));
+
+    saveCatBtn.addEventListener('click', async () => {
+      const name = newCatName.value.trim();
+      if (!name) { showToast('Please enter a category name.', 'error'); return; }
+      if (name.length > 100) { showToast('Category name must be 100 characters or fewer.', 'error'); return; }
+      try {
+        saveCatBtn.disabled = true;
+        const res = await apiFetch('/api/categories', { method: 'POST', body: JSON.stringify({ name }) });
+        await loadCategories();
+        await loadSubcategories();
+        renderFilters();
+        newCatName.value = '';
+        renderCatList();
+        showCatResult(
+          res.created, res.created ? 'CATEGORY CREATED!' : 'ALREADY EXISTS',
+          res.created ? `"${res.name}" has been added.` : `"${res.name}" already exists.`,
+          openManageCatModal);
+      } catch (e) {
+        showCatResult(false, 'ERROR', e.message, openManageCatModal);
+      } finally { saveCatBtn.disabled = false; }
+    });
+
+    saveSubBtn.addEventListener('click', async () => {
+      const catId = subCatParent.value;
+      const name = newSubName.value.trim();
+      if (!catId) { showToast('Please select a parent category.', 'error'); return; }
+      if (!name) { showToast('Please enter a subcategory name.', 'error'); return; }
+      if (name.length > 100) { showToast('Subcategory name must be 100 characters or fewer.', 'error'); return; }
+      try {
+        saveSubBtn.disabled = true;
+        const res = await apiFetch('/api/subcategories', { method: 'POST', body: JSON.stringify({ category_id: catId, name }) });
+        await loadSubcategories();
+        renderFilters();
+        newSubName.value = '';
+        renderSubList();
+        showCatResult(
+          res.created, res.created ? 'SUBCATEGORY CREATED!' : 'ALREADY EXISTS',
+          res.created ? `"${res.name}" has been added.` : `"${res.name}" already exists.`,
+          openManageCatModal);
+      } catch (e) {
+        showCatResult(false, 'ERROR', e.message, openManageCatModal);
+      } finally { saveSubBtn.disabled = false; }
+    });
+
+    // ── Search & Sort ─────────────────────────────────────────────────────
     let searchTimer;
     searchInput.addEventListener('input', () => {
       clearTimeout(searchTimer);
@@ -562,7 +811,6 @@
     await loadCategories();
     await loadSubcategories();
 
-    // Default to the first category if none active to ensure subcategories are shown
     if (categories.length > 0 && activeCatId === null) {
       activeCatId = categories[0].id;
     }
