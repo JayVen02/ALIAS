@@ -80,4 +80,4 @@ ALIAS/
 - **Templates**: Uses a unified layout system (`base.html`).
 
 ---
-*Developed for ITCC42 - Alubijid Local Inventory and Audit System Project.*
+*Developed for ITCC 15, 16, 40, 42 - Alubijid Local Inventory and Audit System Project.*
